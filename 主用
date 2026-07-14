@@ -1,5 +1,4 @@
 {
-  "spider": "https://tc-new.z.wiki/autoupload/iYHTWVx6T8RrCmqdGD6MOdiO_OyvX7mIgxFBfDMDErs/20260707/mJUY/fish07072146.jar;md5;e6d99abc38ec4773b7d6ad9cdc0e3ee0",
   "wallpaper": "https://bing.img.run/rand.php",
   "playerType": 2,
   "sites": [
@@ -13,13 +12,17 @@
       "filterable": 1
     },
     {
-      "key": "橘皮",
-      "name": "🍊┃橘皮┃影视",
+      "key": "WenCai",
+      "name": "✏️┃文才┃影视",
       "type": 3,
-      "api": "csp_Jpys",
+      "api": "https://dogpan.com/f/P1jos3/文才.py",
+      "searchable": 1,
+      "quickSearch": 1,
+      "filterable": 1,
       "playerType": 2,
-      "jar": "https://ncstatic.clewm.net/rsrc/2025/0725/20/318ccef14687421637f5aa0ba1021e33.png;md5;939FFBC2941A28CA533F2653FA4B449E",
-      "ext": "7lj763gg402i7942463j9j9jh84l8798l8gli652828g332i"
+      "ext": {
+        "site": "https://m.hkybqufgh.com,https://m.sizhengxt.com,https://m.9zhoukj.com,https://m.jiabaide.cn"
+      }
     },
     {
       "key": "Duboku",
@@ -30,6 +33,15 @@
       "filterable": 1,
       "changeable": 1,
       "jar": "https://tc-new.z.wiki/autoupload/iYHTWVx6T8RrCmqdGD6MOdiO_OyvX7mIgxFBfDMDErs/20260707/mJUY/fish07072146.jar;md5;e6d99abc38ec4773b7d6ad9cdc0e3ee0"
+    },
+    {
+      "key": "橘皮",
+      "name": "🍊┃橘皮┃影视",
+      "type": 3,
+      "api": "csp_Jpys",
+      "playerType": 2,
+      "jar": "https://ncstatic.clewm.net/rsrc/2025/0725/20/318ccef14687421637f5aa0ba1021e33.png;md5;939FFBC2941A28CA533F2653FA4B449E",
+      "ext": "7lj763gg402i7942463j9j9jh84l8798l8gli652828g332i"
     },
     {
       "key": "Guazi",
@@ -49,16 +61,6 @@
       "quickSearch": 1,
       "filterable": 1,
       "jar": "https://ncstatic.clewm.net/rsrc/2026/0508/10/56d0b667615145949789418bff9f22a5.png;md5;B63A0EB8852BB7AB06500C424CCC3DAE"
-    },
-    {
-      "key": "WenCai",
-      "name": "✏️┃文才┃影视",
-      "type": 3,
-      "api": "csp_WenCai",
-      "searchable": 1,
-      "ext": "https://www.tjrongze.com,https://y2s52n7.com,https://m.hkybqufgh.com,https://m.sizhengxt.com,https://m.9zhoukj.com,https://m.jiabaide.cn",
-      "jar": "https://tc-new.z.wiki/autoupload/iYHTWVx6T8RrCmqdGD6MOdiO_OyvX7mIgxFBfDMDErs/20260707/mJUY/fish07072146.jar;md5;e6d99abc38ec4773b7d6ad9cdc0e3ee0"
     }
   ]
 }
-
