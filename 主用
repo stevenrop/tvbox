@@ -1,0 +1,61 @@
+{
+  "spider": "https://tc-new.z.wiki/autoupload/iYHTWVx6T8RrCmqdGD6MOdiO_OyvX7mIgxFBfDMDErs/20260707/mJUY/fish07072146.jar;md5;e6d99abc38ec4773b7d6ad9cdc0e3ee0",
+  "wallpaper": "https://bing.img.run/rand.php",
+  "playerType": 2,
+  "sites": [
+    {
+      "key": "Netflix",
+      "name": "🏰️┆4K┆奈飞",
+      "type": 1,
+      "api": "https://api.wsyzy.net/api.php/provide/vod",
+      "searchable": 1,
+      "quickSearch": 1,
+      "filterable": 1
+    },
+    {
+      "key": "橘皮",
+      "name": "🍊┃橘皮┃影视",
+      "type": 3,
+      "api": "csp_Jpys",
+      "playerType": 2,
+      "jar": "https://ncstatic.clewm.net/rsrc/2025/0725/20/318ccef14687421637f5aa0ba1021e33.png;md5;939FFBC2941A28CA533F2653FA4B449E",
+      "ext": "7lj763gg402i7942463j9j9jh84l8798l8gli652828g332i"
+    },
+    {
+      "key": "Duboku",
+      "name": "🎯┆独播┆影视",
+      "type": 3,
+      "api": "csp_Duboku",
+      "searchable": 1,
+      "filterable": 1,
+      "changeable": 1
+    },
+    {
+      "key": "Guazi",
+      "name": "🍉┃瓜子┃影视",
+      "type": 3,
+      "api": "csp_Guazi",
+      "searchable": 1,
+      "changeable": 1,
+      "jar": "https://ncstatic.clewm.net/rsrc/2026/0622/18/bb6ee1729c28414496add334ea3ea00a.png;md5;2C09761B17B36A3C58291EB6436C3542"
+    },
+    {
+      "key": "JinPai",
+      "name": "🏅┃金牌┃影院",
+      "type": 3,
+      "api": "csp_Jinpai",
+      "searchable": 1,
+      "quickSearch": 1,
+      "filterable": 1,
+      "jar": "https://ncstatic.clewm.net/rsrc/2026/0508/10/56d0b667615145949789418bff9f22a5.png;md5;B63A0EB8852BB7AB06500C424CCC3DAE"
+    },
+    {
+      "key": "WenCai",
+      "name": "✏️┃文才┃影视",
+      "type": 3,
+      "api": "csp_WenCai",
+      "searchable": 1,
+      "ext": "https://www.tjrongze.com,https://y2s52n7.com,https://m.hkybqufgh.com,https://m.sizhengxt.com,https://m.9zhoukj.com,https://m.jiabaide.cn"
+    }
+  ]
+}
