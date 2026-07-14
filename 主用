@@ -47,6 +47,16 @@
       "quickSearch": 1,
       "filterable": 1,
       "jar": "https://ncstatic.clewm.net/rsrc/2026/0508/10/56d0b667615145949789418bff9f22a5.png;md5;B63A0EB8852BB7AB06500C424CCC3DAE"
+    },
+    {
+      "key": "Ysp",
+      "name": "🌍┆U视┆墙外",
+      "type": 3,
+      "api": "csp_YspAmns",
+      "searchable": 1,
+      "quickSearch": 1,
+      "changeable": 0,
+      "jar": "https://zl.wpscdn.cn/2026/07/11/space_img/64dea739-dfa3-4797-b25a-68c47f222e0a.png;md5;dd6fbafde59756e7f5043a20c74b1961"
     }
   ]
 }
