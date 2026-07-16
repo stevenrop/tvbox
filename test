@@ -1,42 +1,15 @@
 {
-  "spider": "https://raw.githubusercontent.com/FongMi/TV/main/jar/spider.jar",
   "wallpaper": "https://bing.img.run/rand.php",
   "sites": [
     {
-      "key": "YouTube",
-      "name": "🌍 ┇ YouTube ┇ 点播",
-      "type": 3,
-      "api": "csp_Youtube",
+      "key": "Invidious",
+      "name": "🌍 ┇ Invidious ┇ YouTube",
+      "type": 1,
+      "api": "https://invidious.io.lol/api/v1/search?q={wd}&type=video",
       "searchable": 1,
-      "quickSearch": 1,
-      "filterable": 1,
-      "changeable": 1,
-      "ext": "{\"hls_proxy\":true,\"json\":\"https://jk.catvod.site/jk/t4/youtube_home.json\"}",
-      "style": {
-        "type": "rect",
-        "ratio": 1.78
-      }
+      "quickSearch": 0,
+      "filterable": 0,
+      "changeable": 0
     }
-  ],
-  "proxy": [
-    "raw.githubusercontent.com",
-    "googlevideo.com",
-    "rr.googlevideo.com",
-    "redirector.googlevideo.com",
-    "r.googlevideo.com",
-    "googleapis.com",
-    "youtube.com",
-    "www.youtube.com",
-    "m.youtube.com",
-    "youtu.be",
-    "ytimg.com",
-    "i.ytimg.com",
-    "ggpht.com",
-    "yt3.ggpht.com",
-    "youtubei.googleapis.com",
-    "lh3.googleusercontent.com",
-    "play.google.com",
-    "gstatic.com",
-    "nhacmp3youtube.com"
   ]
 }
