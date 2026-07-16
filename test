@@ -71,19 +71,6 @@
       "ext": "AIBOX1/cXJzdHV2d3h5ent8fX5/gJSHXACxiaOhlDsHGFhMei7uBEcMV/8APssxKMcTkX2C3+yfmI5ZDE4A9o73v30sjn+L00OtCnNnZcsVcFpa3ugN6owt/zdz+eeDJnIMC9xwq8gNI1q9J1GMSfDzWNFGdsbkqEB4sgZ+mkrygmAVO2CQptqU2ziGiqXlXSBkVutpsVrLzDzZ3xczQ9aHgW61cQ=="
     },
     {
-      "key": "YouTube",
-      "name": "🌍 ┇ YouTube ┇ 点播",
-      "type": 3,
-      "api": "csp_Youtube",
-      "searchable": 1,
-      "quickSearch": 1,
-      "filterable": 1,
-      "changeable": 1,
-      "jar": "https://backup.fukit.cn/autoupload/f/LGrv9XghipvytOKROwEtAtiO_OyvX7mIgxFBfDMDErs/20260716/coTA/aidaox.jar;md5;2cff59dbb02265c618dfcdaeebd866b6",
-      "ext": "{\"hls_proxy\":true,\"json\":\"https://jk.catvod.site/jk/t4/youtube_home.json\"}",
-      "style": { "type": "rect", "ratio": 1.78 }
-    },
-    {
       "key": "YouTubeLive",
       "name": "📡 ┇ YouTube ┇ 直播",
       "type": 3,
@@ -95,14 +82,40 @@
       "jar": "https://backup.fukit.cn/autoupload/f/LGrv9XghipvytOKROwEtAtiO_OyvX7mIgxFBfDMDErs/20260716/coTA/aidaox.jar;md5;2cff59dbb02265c618dfcdaeebd866b6",
       "ext": "{\"hls_proxy\":true}",
       "style": { "type": "rect", "ratio": 1.78 }
+    },
+    {
+      "key": "YouTube",
+      "name": "🌍 ┇ YouTube ┇ 点播",
+      "type": 3,
+      "api": "csp_Youtube",
+      "searchable": 1,
+      "quickSearch": 1,
+      "filterable": 1,
+      "changeable": 1,
+      "jar": "https://tc-new.z.wiki/autoupload/iYHTWVx6T8RrCmqdGD6MOdiO_OyvX7mIgxFBfDMDErs/20260711/xZj2/fish07111721.jar",
+      "ext": "{\"hls_proxy\":true,\"json\":\"https://jk.catvod.site/jk/t4/youtube_home.json\"}",
+      "style": { "type": "rect", "ratio": 1.78 }
     }
   ],
-  "sniffer": "1",
-  "snifferRules": [
-    { "regex": "googlevideo.com" },
-    { "regex": "youtube.com" },
-    { "regex": "youtu.be" },
-    { "regex": "ytimg.com" }
+  "parses": [
+    {
+      "name": "手动解析①",
+      "type": 0,
+      "url": "https://jx.xmflv.com/?url=",
+      "ext": { "header": { "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36" } }
+    },
+    {
+      "name": "手动解析②",
+      "type": 0,
+      "url": "https://jx.nnxv.cn/tv.php?url=",
+      "ext": { "header": { "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36" } }
+    },
+    {
+      "name": "手动解析③",
+      "type": 0,
+      "url": "https://jx.m3u8.tv/jiexi/?url=",
+      "ext": { "header": { "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36" } }
+    }
   ],
   "proxy": [
     "raw.githubusercontent.com",
