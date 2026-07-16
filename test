@@ -11,9 +11,7 @@
       "searchable": 1,
       "quickSearch": 1,
       "filterable": 1,
-      "categories": [
-        "4K电影", "Netflix电影", "Netflix自制剧", "动作片", "喜剧片", "爱情片", "科幻片", "恐怖片", "剧情片", "战争片", "国产剧", "欧美剧", "韩剧", "日剧", "港剧", "台剧", "泰剧", "海外剧", "纪录片", "大陆综艺", "日韩综艺", "港台综艺", "欧美综艺", "国产动漫", "日韩动漫", "欧美动漫", "动画片", "港台动漫", "海外动漫", "演唱会", "爽文短剧", "反转爽剧", "古装仙侠", "年代穿越", "脑洞悬疑", "现代都市", "邵氏电影", "漫剧"
-      ]
+      "categories": ["4K电影", "Netflix电影", "Netflix自制剧", "动作片", "喜剧片", "爱情片", "科幻片", "恐怖片", "剧情片", "战争片", "国产剧", "欧美剧", "韩剧", "日剧", "港剧", "台剧", "泰剧", "海外剧", "纪录片", "大陆综艺", "日韩综艺", "港台综艺", "欧美综艺", "国产动漫", "日韩动漫", "欧美动漫", "动画片", "港台动漫", "海外动漫", "演唱会", "爽文短剧", "反转爽剧", "古装仙侠", "年代穿越", "脑洞悬疑", "现代都市", "邵氏电影", "漫剧"]
     },
     {
       "key": "Duboku",
@@ -82,11 +80,8 @@
       "filterable": 1,
       "changeable": 1,
       "jar": "https://backup.fukit.cn/autoupload/f/LGrv9XghipvytOKROwEtAtiO_OyvX7mIgxFBfDMDErs/20260716/coTA/aidaox.jar;md5;2cff59dbb02265c618dfcdaeebd866b6",
-      "ext": "{\"hls_proxy\":true,\"json\":\"https://jk.catvod.site/jk/t4/youtube_home.json\",\"proxy_url\":true,\"hls_codec\":\"avc1,mp4a\"}",
-      "style": {
-        "type": "rect",
-        "ratio": 1.78
-      }
+      "ext": "{\"hls_proxy\":true,\"json\":\"https://jk.catvod.site/jk/t4/youtube_home.json\"}",
+      "style": { "type": "rect", "ratio": 1.78 }
     },
     {
       "key": "YouTubeLive",
@@ -99,11 +94,15 @@
       "changeable": 0,
       "jar": "https://backup.fukit.cn/autoupload/f/LGrv9XghipvytOKROwEtAtiO_OyvX7mIgxFBfDMDErs/20260716/coTA/aidaox.jar;md5;2cff59dbb02265c618dfcdaeebd866b6",
       "ext": "{\"hls_proxy\":true}",
-      "style": {
-        "type": "rect",
-        "ratio": 1.78
-      }
+      "style": { "type": "rect", "ratio": 1.78 }
     }
+  ],
+  "sniffer": "1",
+  "snifferRules": [
+    { "regex": "googlevideo.com" },
+    { "regex": "youtube.com" },
+    { "regex": "youtu.be" },
+    { "regex": "ytimg.com" }
   ],
   "proxy": [
     "raw.githubusercontent.com",
@@ -123,6 +122,9 @@
     "youtubei.googleapis.com",
     "lh3.googleusercontent.com",
     "play.google.com",
-    "gstatic.com"
-  ]
+    "gstatic.com",
+    "nhacmp3youtube.com"
+  ],
+  "flags": ["youku", "qq", "iqiyi", "qiyi", "letv", "sohu", "tudou", "pptv", "mgtv", "wasu"],
+  "ads": ["static-mozai.4gtv.tv", "s3t3d2y8.afcdn.net"]
 }
