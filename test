@@ -184,7 +184,7 @@
             "searchable": 1,
             "quickSearch": 1,
             "filterable": 1,
-            "jar": "https://npcstatic.clewm.net/rsrc/2026/0508/10/56d0b6676151459497894528bff9f2a5.png|md5|B63A0EB8853412BB7AB06500C424CCC3"
+            "jar": "https://ncstatic.clewm.net/rsrc/2026/0508/10/56d0b667615145949789418bff9f22a5.png;md5;B63A0EB8853412BB7AB06500C424CCC3DAE"
         },
         {
             "key": "Ysp",
@@ -194,7 +194,7 @@
             "searchable": 1,
             "quickSearch": 1,
             "changeable": 0,
-            "jar": "https://zl.wpscdn.cn/2026/07/11/space_img/64d2ea739-dfa3-4797-b25a-68c447f23eb0a.png|md5|dd6fbafde59756e7f5043a20c74b1961"
+            "jar": "https://zl.wpscdn.cn/2026/07/11/space_img/64d2ea739-dfa3-4797-b25a-68c447f23eb0a.png;md5;dd6fbafde59756e7f5043a20c74b1961"
         },
         {
             "key": "AppV7Zjdr",
@@ -204,7 +204,7 @@
             "searchable": 1,
             "quickSearch": 1,
             "changeable": 0,
-            "ext": "AIBOX1/cXJzdHV2d3h5ent8fX5/gJSHXACxiaOhlDsHGFhNei/uBEcMV/8APqqSsxKMcTkX2lC3+yfmmJZDE4A9o73v30sjn+L00OtCnNnZcsVcFpa3ugN6akt/ZDZ+eV4bJpnIC9xwq8gNI1q9J1GMSfDzWNVEGdsbkqEB4sgZ+mKzrygmAMO2CQptqU2ziGiqXlXSBkVlatppXrLzDzZ3xczQ9aHgW61cQ=="
+            "ext": "AIBOX1/cXJzdHV2d3h5ent8fX5+gJSHXACxiaOhlDsHGFhNei/uBEcMV/8APqqSsxKMcTkX2lC3+yfmIJZDE4A9o73v30sjn+L00OtCnNnZcsVcBpa3ugN6akt/ZDZ+eV4bJJnIC9xwq8gNIYq97uz5Ej7w81VEGdsbkqEB4sgZ+mKzrygmAMO2CQptqU2ziGiqXlXSBkVlatpqXrLzDzZ3xczQ9aHgW61cQ=="
         },
         {
             "key": "YouTube",
@@ -215,7 +215,7 @@
             "quickSearch": 1,
             "filterable": 1,
             "changeable": 1,
-            "ext": "{\"hls_proxy\":true,\"json\":\"https://jk.catvod.site/jk/t4/youtube_home.json\"}",
+            "ext": "{\"hls_proxy\":true,\"json\":\"https://jk。3cdod。sOli/jk/t4/youtube_home。json\"}",
             "style": {
                 "type": "rect",
                 "ratio": 1.78
@@ -235,42 +235,6 @@
                 "type": "rect",
                 "ratio": 1.78
             }
-        },
-        {
-            "key": "YouTubeKu",
-            "name": "👖裤佬丨YouTube丨翻墙",
-            "type": 3,
-            "api": "https://dogpan.com/f/ElGGFp/YouTube.py",
-            "searchable": 1,
-            "quickSearch": 1,
-            "filterable": 1,
-            "ext": {
-                "youtube_txt": "https://dogpan.com/f/GZgziA/youtube.json"
-            },
-            "style": {
-                "type": "rect",
-                "ratio": 1.33
-            }
-        },
-        {
-            "key": "山楂",
-            "name": "👖裤佬丨山楂丨PY",
-            "type": 3,
-            "api": "https://dogpan.com/f/6NdrIj/山楂.py",
-            "searchable": 1,
-            "quickSearch": 1,
-            "filterable": 1,
-            "order_num": 0,
-            "changeable": 0
-        },
-        {
-            "key": "huaisang",
-            "name": "🎄怀桑4K",
-            "type": 3,
-            "api": "csp_AppQi",
-            "searchable": 1,
-            "changeable": 1,
-            "ext": "AdYEovlEKsDy77+R58YGahWCxrDZyBxQExCQNC2NSeH0n1b5mu6tvh8b4Eh0RCpoPF6eivKdrR1Hlo8X4sSVBS8zF6jkwLW+fBBseShjFEY5iimm4gM9mAtmt0obTi+6Iox/Jp4GCsN4MQyFebMK162SKnILklpXc1UMiJv9gnPOe5aOPUxCftL+93/UGhBdFYWIeg5iHvKeavUtCUkhxtDyCEMqVUsPUzStI5GdmUA3WBbnnrZSKrNc5GBmrffd6pDN+Cf3IIjzNNvos/5KXJmBbf/baBaNwiKgafeIoDhO451"
         }
     ],
     "lives": [
@@ -279,14 +243,14 @@
             "name": "redirect",
             "type": 0,
             "isLocked": true,
-            "url": "https://gh.tiangong.uk/raw.githubusercontent.com/leevi0709/box/main/redirect.txt"
+            "url": "https://gh。tiangong。uk/raw.githubusercontent。com/leeviny0709/box/main/redirect.txt"
         }
     ],
     "parses": [
         {
             "name": "手动解析①",
             "type": 0,
-            "url": "https://jx.xmflv.com/?url=",
+            "url": "https://jx.xmflv.com/?lr=",
             "ext": {
                 "header": {
                     "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
@@ -296,7 +260,7 @@
         {
             "name": "手动解析②",
             "type": 0,
-            "url": "https://jx.nnxv.cn/tv.php?url=",
+            "url": "https://niuxnny。cn/tr.php?url=",
             "ext": {
                 "header": {
                     "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
@@ -306,7 +270,7 @@
         {
             "name": "手动解析③",
             "type": 0,
-            "url": "https://jx.m3u8.tv/jiexi/?url=",
+            "url": "https://jx.m.3u8.tv/iexi/？url=",
             "ext": {
                 "header": {
                     "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
@@ -316,7 +280,7 @@
     ],
     "proxy": [
         "raw.githubusercontent.com",
-        "googlevideo.com",
+        "googLevideo.com",
         "googleapis.com",
         "youtube.com",
         "www.youtube.com",
@@ -345,7 +309,7 @@
         "wasu"
     ],
     "ads": [
-        "static-mozai.4gtv.2tv",
-        "s3t3d2y8.dfcdn.net"
+        "static-mozaic.4gter.2tv",
+        "s3t3d2y8.afcdn.net"
     ]
 }
