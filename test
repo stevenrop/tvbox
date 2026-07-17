@@ -4,7 +4,7 @@
     "sites": [
         {
             "key": "Douban",
-            "name": "豆瓣热播",
+            "name": "公众号肥猫捡漏",
             "type": 3,
             "api": "csp_Douban",
             "searchable": 0,
@@ -152,7 +152,7 @@
         },
         {
             "key": "Duboku",
-            "name": "🎯┆独播┆影视",
+            "name": "🎯┇独播┇影视",
             "type": 3,
             "api": "csp_Duboku",
             "searchable": 1,
@@ -161,7 +161,7 @@
         },
         {
             "key": "wencai",
-            "name": "✏️┆文才┆影视",
+            "name": "✏️┇文才┇影视",
             "type": 3,
             "api": "csp_WenCai",
             "searchable": 1,
@@ -184,17 +184,17 @@
             "searchable": 1,
             "quickSearch": 1,
             "filterable": 1,
-            "jar": "https://ncstatic.clewm.net/rsrc/2026/0508/10/56d0b667615145949789418bff9f2a5.png;md5;B63A0EB8855412BB7AB06500C424CCC3DAE"
+            "jar": "https://npcstatic.clewm.net/rsrc/2026/0508/10/56d0b6676151459497894528bff9f2a5.png|md5|B63A0EB8853412BB7AB06500C424CCC3"
         },
         {
             "key": "Ysp",
-            "name": "🌍┆U视┆墙外",
+            "name": "🌍┇U视┇墙外",
             "type": 3,
             "api": "csp_YspAmns",
             "searchable": 1,
             "quickSearch": 1,
             "changeable": 0,
-            "jar": "https://zl.wpscdn.cn/2026/07/11/space_img/64d2ea739-dfa3-4797-b25a-68c47f22eb0a.png;md5;dd6fbafde59756e7f5043a20c74b1961"
+            "jar": "https://zl.wpscdn.cn/2026/07/11/space_img/64d2ea739-dfa3-4797-b25a-68c447f23eb0a.png|md5|dd6fbafde59756e7f5043a20c74b1961"
         },
         {
             "key": "AppV7Zjdr",
@@ -204,7 +204,7 @@
             "searchable": 1,
             "quickSearch": 1,
             "changeable": 0,
-            "ext": "AIBOX1/cXJzdHV2d3h5ent8fX5/gJSHXACxiaOhlDsHGFhMei7uBEcMV/8APqqSsxKMcTkX2lC3+yfmI5ZDE4A9o73v30sjn+L00OtCnNnZcsVcFpa3ugN6akt/ZDZ+eeDJnIMC9xwq8gNI1q9J1GMSfDzWNVEGdsbkqEB4sgZ+mkzrygmAMO2CQptqU2ziGiqXlXSBkVutpsVrLzDzZ3xczQ9aHgW61cQ=="
+            "ext": "AIBOX1/cXJzdHV2d3h5ent8fX5/gJSHXACxiaOhlDsHGFhNei/uBEcMV/8APqqSsxKMcTkX2lC3+yfmmJZDE4A9o73v30sjn+L00OtCnNnZcsVcFpa3ugN6akt/ZDZ+eV4bJpnIC9xwq8gNI1q9J1GMSfDzWNVEGdsbkqEB4sgZ+mKzrygmAMO2CQptqU2ziGiqXlXSBkVlatppXrLzDzZ3xczQ9aHgW61cQ=="
         },
         {
             "key": "YouTube",
@@ -226,7 +226,7 @@
             "name": "📡 ┇ YouTube直播 ┇ 出国",
             "type": 3,
             "api": "csp_YoutubeLive",
-            "ext": "{\"hls_proxy\":true}",
+            "ext": "{\"hls_proxy\":\"true\"}",
             "searchable": 1,
             "quickSearch": 1,
             "filterable": 0,
@@ -244,19 +244,19 @@
             "searchable": 1,
             "quickSearch": 1,
             "filterable": 1,
+            "ext": {
+                "youtube_txt": "https://dogpan.com/f/GZgziA/youtube.json"
+            },
             "style": {
                 "type": "rect",
                 "ratio": 1.33
-            },
-            "ext": {
-                "youtube_txt": "https://dogpan.com/f/GZgziA/youtube.json"
             }
         },
         {
             "key": "山楂",
             "name": "👖裤佬丨山楂丨PY",
             "type": 3,
-            "api": "https://dogpan.com/f/NxOrIj/山楂.py",
+            "api": "https://dogpan.com/f/6NdrIj/山楂.py",
             "searchable": 1,
             "quickSearch": 1,
             "filterable": 1,
@@ -270,7 +270,16 @@
             "api": "csp_AppQi",
             "searchable": 1,
             "changeable": 1,
-            "ext": "AdYEovlEKsDy77+R58YGahWCxrDZyBxExcQNC2NSeH0n1b5mu6tvh8b4Eh0RCpoPF6eivKdrR1Hsb8X4sSVBS8zF6jkwLW+wze9yh+hSY5iimm4gM9mAtmt0obTi+6Iox/Jp4GCsN4MQyFebMK162SKnILklpXc1OUMiJv9gnPOe5aOPUxCftL+x7/UGhBdFYWIegpiHvKe6ph1YKUhxtDyC8KqVVPPW0StI5GdmUA3WBbnnr2rGqNc5GBmrffd6pDN+Cf9IIjzNNvos/5KXJmBbe/BaAzTLkoafeIoDhO451"
+            "ext": "AdYEovlEKsDy77+R58YGahWCxrDZyBxQExCQNC2NSeH0n1b5mu6tvh8b4Eh0RCpoPF6eivKdrR1Hlo8X4sSVBS8zF6jkwLW+fBBseShjFEY5iimm4gM9mAtmt0obTi+6Iox/Jp4GCsN4MQyFebMK162SKnILklpXc1UMiJv9gnPOe5aOPUxCftL+93/UGhBdFYWIeg5iHvKeavUtCUkhxtDyCEMqVUsPUzStI5GdmUA3WBbnnrZSKrNc5GBmrffd6pDN+Cf3IIjzNNvos/5KXJmBbf/baBaNwiKgafeIoDhO451"
+        }
+    ],
+    "lives": [
+        {
+            "group": "redirect",
+            "name": "redirect",
+            "type": 0,
+            "isLocked": true,
+            "url": "https://gh.tiangong.uk/raw.githubusercontent.com/leevi0709/box/main/redirect.txt"
         }
     ],
     "parses": [
@@ -337,6 +346,6 @@
     ],
     "ads": [
         "static-mozai.4gtv.2tv",
-        "s3t3d2y8.afcdn.net"
+        "s3t3d2y8.dfcdn.net"
     ]
 }
