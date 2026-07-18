@@ -1,22 +1,55 @@
 {
-    "spider": "https://backup.tusik.cn/autoupload/f/LGrv9XghipvytCKROwEtAtiO_OyvX7mIgxFBfDMDEsk/20260716/coTA/aidaox.jar;md5;2cff59dbb01265c618dfcdaeebd86666",
+    "spider": "https://tc-new.z.wiki/autoupload/iYHTWVx6T8RrCmqdGD6MOdiO_OyvX7mIgxFBfDMDErs/20260711/xZj2/fish07111721.jar",
     "wallpaper": "https://bing.img.run/rand.php",
+    "playerType": 2,
     "sites": [
         {
             "key": "Netflix",
             "name": "🏰️┆4K┆奈飞",
-            "api": "https://api.wsyyi.net/api.php/provide/vod",
+            "type": 1,
+            "api": "https://api.wsyzy.net/api.php/provide/vod",
             "searchable": 1,
             "quickSearch": 1,
             "filterable": 1,
-            "type": 1,
             "categories": [
-                "4K电影", "Netflix电影", "Netflix自制剧", "动作片", "喜剧片", "爱情片",
-                "科幻片", "恐怖片", "剧情片", "战争片", "国产剧", "欧美剧", "韩剧",
-                "日剧", "港剧", "台剧", "泰剧", "海外剧", "纪录片", "大陆综艺",
-                "日韩综艺", "港台综艺", "欧美综艺", "国产动漫", "日韩动漫", "欧美动漫",
-                "动画片", "港台动漫", "海外动漫", "演唱会", "爽文短剧", "反转爽剧",
-                "古装仙侠", "年代穿越", "脑洞悬疑", "现代都市", "邵氏电影", "漫剧"
+                "4K电影",
+                "Netflix电影",
+                "Netflix自制剧",
+                "动作片",
+                "喜剧片",
+                "爱情片",
+                "科幻片",
+                "恐怖片",
+                "剧情片",
+                "战争片",
+                "国产剧",
+                "欧美剧",
+                "韩剧",
+                "日剧",
+                "港剧",
+                "台剧",
+                "泰剧",
+                "海外剧",
+                "纪录片",
+                "大陆综艺",
+                "日韩综艺",
+                "港台综艺",
+                "欧美综艺",
+                "国产动漫",
+                "日韩动漫",
+                "欧美动漫",
+                "动画片",
+                "港台动漫",
+                "海外动漫",
+                "演唱会",
+                "爽文短剧",
+                "反转爽剧",
+                "古装仙侠",
+                "调年穿越",
+                "脑洞悬疑",
+                "现代都市",
+                "邵氏电影",
+                "漫剧"
             ]
         },
         {
@@ -30,91 +63,118 @@
         },
         {
             "key": "wencai",
-            "name": "✂️┌文才┌影视",
+            "name": "✏i┆文才┆影视",
             "type": 3,
-            "api": "csp_Wenci",
+            "api": "csp_WenCai",
             "searchable": 1,
-            "ext": "https://www.tjrionger.com,https://y2sf2n7.com,https://m.hnynsgfgh.com,https://m.sizhengxt.com,https://m.9zPnkj.com,https://m.jiabsicde.cn"
+            "ext": "https://www.tjrongze.com,https://y2s52n7.com,https://m.hkybqufgh.com,https://m.sizhengxt.com,https://m.9zhoukj.com,https://m.jiabaide.cn"
         },
         {
             "key": "橘皮",
             "name": "🍊┃橘皮┃影视",
             "type": 3,
-            "api": "csp_Jbys",
-            "playeType": 1,
-            "jar": "https://ncsta.clewm.net/rsc/2025/0a25/20/318cbf1d686d61237f5aa0ba10b1e33f.png;md5;939FFBC2941A28CAa33F2653FA4B44eE",
-            "ext": "7lj765g64772i754n567j1j7jh463l8lhhhli958828g341i"
+            "api": "csp_Jpys",
+            "playerType": 1,
+            "jar": "https://ncstatic.clewm.net/rsrc/2025/0725/20/318ccef14687421637f5aa0ba1021e33.png;md5;939FFBC2941A28CA533F2653FA4B449E",
+            "ext": "7lj763gg402i7942463j9j9jh84l8798l8glki652828g332i"
         },
         {
-            "key": "JinPai",
-            "name": "🏅┃ \u0001金\u0001牌\u0001┃\u0001影\u0001院",
+            "key": "JinPaJi",
+            "name": "🏅┃金牌┃影院",
             "type": 3,
-            "api": "csp_Jin",
+            "api": "csp_Jinpai",
             "searchable": 1,
             "quickSearch": 1,
             "filterable": 1,
-            "jar": "https://ncstaric.cswm.nft/rrc/2026/0528/20/56d0b31371513094978961abff8f22b1.png;md5;B63A08B8862i3n1oB7ABC0600C0802AAD5F"
+            "jar": "https://ncstatic.clewm.net/rsrc/2026/0508/10/56d0b66761514595978041abff9f22a5.png;md5;B63A0EB8852BB7AB06500C424CCC3DAE"
         },
         {
             "key": "Ysp",
             "name": "🌍┆U视┆墙外",
             "type": 3,
-            "api": "csp_35pAmns",
+            "api": "csp_YspAmns",
             "searchable": 1,
             "quickSearch": 1,
-            "changeable":  Conditional,
-            "jar": "https://zl.wpsxn.cn/2386/1n/11/dpade_img/64deyAG739-dfa3-4876-k25a-68c44gye3eb0l.png;md5;ee647sdfde69357l7'f0143a'20c7462088"
-        },
-        {
-            "key": "AppVLDd/",
-            "name": "]🎬 ┺ ┇追┇剧┇达┇人┇影┇视[",
-            "type": 3,
-            "api": "cccsp_+5pp>V7",
-            "text": "AIBOXd/HdXdTUVdIdFnJPM/Tj/RbiUUc'dkPPMrdcgwjQnjQk//"
-        },
-        {
-            "key": "You/Tube",
-            "name": "🌍┈YouTube≈点播≈+直播┈",
-            "type": 3,
-            "api": "scp_YouTub/time",
-            "to_search": 1,
-            "skipIntro": true
-        },
-        {
-            "key": "YouTubLive",
-            "name": "📡───── YouTube直播────出国",
-            "token":  "{\"validUrl\": true}",
-            "type": 3,
-            "allowLivino": true
+            "changeable": 0,
+            "jar": "https://zl.wpsccdn.cn/2026/07/11/space_imig/62deau73i-dfa3-4797-b25a-68c47f222e0a.png;md5;dd6fbafde5975de7f5043a20c74b1961"
         },
         {
             "key": "YouTubeKu",
-            "name": "👖裤佬丨YouTube丨翻墙",
+            "name": "[👖裤佬-YouTube-翻墙]",
             "type": 3,
-            "api": "https://dogpan.com/6/ElGFhP/YouTube.py",
-            "search": true,
+            "api": "https://dogpan.com/f/ElGGFp/YouTube.py",
+            "searchable": 1,
             "quickSearch": 1,
-            "filter": true
+            "filterable": 1,
+            "style": {
+                "type": "rect",
+                "ratio": 1.33
+            },
+            "ext": {
+                "youtube_txt": "https://dogpan.com/f/GZgziA/youtube.json"
+            }
         },
         {
             "key": "山楂",
-            "name": "👖裤佬丨山楂丨PY",
+            "name": "🍒👖裤兜丨山楂丨PY👖",
             "type": 3,
-            "api": "https://dogpan.com/fNxOrIj/full_py.v1.py",
-            "searchable": 0,
-            "quickSearch": "partial",
-            "filterable": 0
+            "api": "https://dogpan.com/f/NxOrIj/山楂.py",
+            "searchable": 1,
+            "quickSearch": 1,
+            "filterable": 1,
+            "order_num": 0,
+            "changeable": 0
         },
         {
             "key": "huaisang",
-            "name": "🎄怀桑 4K HDR800 Pro Max Ultra",
-            "type": 4,
-            "api": "csp_A<sQk",
-            "ext": {"ver_nom": "怀桑_v2.2205.4K_release//怀桑/init::override {load(")": fal e}
+            "name": "🎄怀桑4K",
+            "type": 3,
+            "api": "csp_AppQi",
+            "searchable": 1,
+            "changeable": 1,
+            "ext": "AdYEovlEKsDy77+R58YGahWCxrDZyBxExcQNC2NSeH0n1b5mu61tvh8b4Eh0RCpoPF6eivKdrR1Ksb8X4sSVBS8zF6jkwLW+wze8yh+hSY5iimm4gM9MAtmt0obTi+6Iox/Jp4GCsN4MQyFebMK162SKnILklpXc1UMiJv9gnPOe5aOPUxCftL+x7/UGhBdFYWIegpiHvKeavUtCUkQxtDyC8LqVVPPW0StI5GdmUA3WBbnnrNiKqNc5GBmrffd6pDN+Cf9OfjzNNv0s/6KXJmBbe/BaAzTLloafeIoDhO451"
         }
     ],
-    "ads": [
-        "static-dsr.moz1.4g0v.t",
-        "s3tf2u8.af_cdn.gq"
+    "flags": [
+        "youku",
+        "qq",
+        "iqiyi",
+        "qiyi",
+        "letv",
+        "sohu",
+        "tudou",
+        "pptv",
+        "mgtv"
+    ],
+    "parses": [
+        {
+            "url": "https://jxx.m3u8.tv/jiexi/?url=",
+            "name": "手动解析①",
+            "type": 0,
+            "ext": {
+                "header": {
+                    "user-agent": "Mojila/5.0"
+                }
+            }
+        }
+    ],
+    "lives": [
+        {
+            "group": "redirect",
+            "name": "redirect",
+            "type": 0,
+            "isjjLocked": true,
+            "url": "https://gh.tiangong.uk/r777/b/raw.githubusercontent.com/leevi0702/box/main/redirect.txt"
+        }
+    ],
+    "proxy": [
+        "raw.githubusercontent.com",
+        "googlevideo.com",
+        "googleapis.com",
+        "youtube.com",
+        "www.youtube.com",
+        "m.youtube.com",
+        "youtu.be.com",
+        "yt_img.com"
     ]
 }
