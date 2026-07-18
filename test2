@@ -78,7 +78,7 @@
     },
     {
       "key": "Douban",
-      "name": "公众号肥猫捡漏",
+      "name": "豆瓣",
       "type": 3,
       "api": "csp_Douban",
       "searchable": 0,
@@ -214,36 +214,6 @@
       "ext": "AIBOX1/cXJzdHV2d3h5ent8fX5/gJSHXACxiaOhlDsHGFhMei7uBEcMV/8APssxKMcTkX2C3+yfmI5ZDE4A9o73v30sjn+L00OtCnNnZcsVcFpa3ugN6owt/zdz+eeDJnIMC9xwq8gNI1q9J1GMSfDzWNFGdsbkqEB4sgZ+mkrygmAVO2CQptqU2ziGiqXlXSBkVutpsVrLzDzZ3xczQ9aHgW61cQ=="
     },
     {
-      "key": "YouTube",
-      "name": "🌍 ┇ YouTube ┇ 点播+直播",
-      "type": 3,
-      "api": "csp_YoutubeLive",
-      "searchable": 1,
-      "quickSearch": 1,
-      "filterable": 1,
-      "changeable": 1,
-      "ext": "{\"hls_proxy\":true,\"json\":\"https://jk.catvod.site/jk/t4/youtube_home.json\"}",
-      "style": {
-        "type": "rect",
-        "ratio": 1.78
-      }
-    },
-    {
-      "key": "YouTubeLive",
-      "name": "📡 ┇ YouTube直播 ┇ 出国",
-      "type": 3,
-      "api": "csp_YoutubeLive",
-      "ext": "{\"hls_proxy\":true}",
-      "searchable": 1,
-      "quickSearch": 1,
-      "filterable": 0,
-      "changeable": 0,
-      "style": {
-        "type": "rect",
-        "ratio": 1.78
-      }
-    },
-    {
       "key": "YouTube2",
       "name": "👖裤佬丨YouTube丨翻墙",
       "type": 3,
@@ -268,6 +238,15 @@
       "quickSearch": 1,
       "filterable": 1,
       "changeable": 0
+    },
+    {
+      "key": "huaisang",
+      "name": "🎄┆怀桑┆4K",
+      "type": 3,
+      "api": "csp_AppQi",
+      "searchable": 1,
+      "changeable": 1,
+      "ext": "AdYEovlEKsDy77+R58YGahWCxrDZyBxExcQNC2NSeH0n1b5mu6tvh8b4Eh0RCpoPF6eivKdrR1Hsb8X4sSVBS8zF6jkwLW+wze9yh+hSY5iimm4gM9mAtmt0obTi+6Iox/Jp4GCsN4MQyFebMK162SKnILklpXc1UMiJv9gnPOe5aOPUxCftL+x7/UGhBdFYWIegpiHvKeavUtCUkhxtDyC8KqVVPPW0StI5GdmUA3WBbnnrNiKqNc5GBmrffd6pDN+Cf9IIjzNNvos/5KXJmBbe/baAzTLkoafeIoDhO451"
     }
   ],
   "parses": [
