@@ -24,7 +24,7 @@ var rule = {
         tv:    { 类型: '', 地区: '', 年份: '', 页偏移: '', 排序: 'newstime' }
     },
     searchUrl: '/cn/search/**--.html?page=fypage',
-    searchable: 2,
+    searchable: 1,
     quickSearch: 0,
     headers: {
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36',
@@ -38,6 +38,7 @@ var rule = {
     // 一级返回的 vod_id 已经是完整 URL, 二级直接用, 不需要 detailUrl 模板
     detailUrl: '',
     limit: 6,
+    double: false,
     play_parse: true,
     lazy: $js.toString(() => {
         // input 是 vod_play_url 中 $ 后半段, 即我们直接拼好的 m3u8 直链
@@ -46,6 +47,34 @@ var rule = {
         } else {
             input = { parse: 1, url: input, header: rule.headers };
         }
+    }),
+
+    // 推荐: 首页推荐列表, 复用电影分类第一页
+    推荐: $js.toString(() => {
+        let d = [];
+        let url = rule.host + '/cn/movie/---newstime.html';
+        let html = request(url, { headers: rule.headers, timeout: rule.timeout });
+        let list = pdfa(html, '.lists-content > ul > li');
+        if (!list || list.length === 0) {
+            list = pdfa(html, '.lists-content ul li');
+        }
+        list.forEach(it => {
+            let href = pdfh(it, 'a && href') || '';
+            let name = (pdfh(it, 'h2 a && Text') || pdfh(it, 'a && Text') || '').trim();
+            let img = pdfh(it, 'img.thumb && src') || pdfh(it, 'img && src') || '';
+            if (!href || !name) return;
+            if (href.startsWith('//')) href = 'https:' + href;
+            else if (href.startsWith('/')) href = rule.host + href;
+            if (img && img.startsWith('//')) img = 'https:' + img;
+            else if (img && img.startsWith('/')) img = rule.host + img;
+            d.push({
+                vod_id: href,
+                vod_name: name,
+                vod_pic: img,
+                vod_remarks: ''
+            });
+        });
+        VODS = d;
     }),
 
     // 一级列表: 用 js 写法, 处理页码偏移 + 自定义解析
@@ -104,9 +133,19 @@ var rule = {
         // 解析分页
         let pageHtml = pdfh(html, '.pagination && Html') || pdfh(html, '.pages && Html') || '';
         let pageCount = page;
-        let pageMatches = [...pageHtml.matchAll(/---(\d+)-\.html/g)];
+        let pageMatches = [];
+        let pageRegex = /---(\d+)-\.html/g;
+        let pm;
+        while ((pm = pageRegex.exec(pageHtml)) !== null) {
+            pageMatches.push(pm);
+        }
         if (pageMatches.length > 0) {
-            pageCount = Math.max(page, ...pageMatches.map(m => Number(m[1]) + 1));
+            let maxPage = page;
+            for (let k = 0; k < pageMatches.length; k++) {
+                let p = Number(pageMatches[k][1]) + 1;
+                if (p > maxPage) maxPage = p;
+            }
+            pageCount = maxPage;
         } else if (d.length >= 24) {
             pageCount = page + 1;
         }
