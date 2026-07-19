@@ -1,45 +1,38 @@
-// PPnix 纯 drpy2 独立脚本 v1
-// 使用 drpy2 标准 API (pdfh/pdfa/request), 无外部依赖, 可直接放 GitHub raw 用
-// 适配网站: https://www.ppnix.com
-//
-// 配置示例 (TVBox JSON):
-// {
-//   "key": "ppnix",
-//   "name": "「直」PPnix",
-//   "type": 3,
-//   "api": "<这个 js 文件 的 raw URL>",
-//   "ext": "https://www.ppnix.com"
-// }
+// PPnix 完全重写版 v2 - 适配 ppnix.com 实际网站结构
+// 网站: https://www.ppnix.com
+// 修复了原脚本的以下问题:
+// 1. url 使用 fyclass 动态切换分类 (电影/电视剧)
+// 2. 列表选择器使用实际 DOM 结构: .lists-content ul li
+// 3. 详情页正确提取 infoid + m3u8 数组构造播放链接
+// 4. 搜索 URL 格式修正
+// 5. 分页偏移修正 (offset = page - 1)
 
 var rule = {
     title: 'PPnix',
     host: 'https://www.ppnix.com',
-    // 新的 URL 模板: /movie/类型-地区-年份-页码偏移-排序.html
-    url: '/movie/----newstime.html',
-    filterable: 1,
+    // 使用 fyclass 动态切换分类, fyfilter 传递筛选参数
+    url: '/fyclass/fyfilter.html',
     filter_url: '{{fl.类型}}-{{fl.地区}}-{{fl.年份}}-{{fl.页偏移}}-{{fl.排序}}',
     filter_def: {
         movie: { 类型: '', 地区: '', 年份: '', 页偏移: '', 排序: 'newstime' },
         tv:    { 类型: '', 地区: '', 年份: '', 页偏移: '', 排序: 'newstime' }
     },
-    searchUrl: '/search/**--.html?page=fypage',
+    // 搜索: 实际 offset = fypage - 1
+    searchUrl: '/search/**-fypage-.html',
     searchable: 2,
     quickSearch: 0,
     headers: {
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36',
-        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
-        'Accept-Language': 'zh-CN,zh;q=0.9,en;q=0.8',
-        'Referer': 'https://www.ppnix.com/movie/'
+        'Referer': 'https://www.ppnix.com/'
     },
     timeout: 15000,
     class_name: '电影&电视剧',
     class_url: 'movie&tv',
-    // 一级返回的 vod_id 已经是完整 URL, 二级直接用, 不需要 detailUrl 模板
     detailUrl: '',
     limit: 6,
     play_parse: true,
     lazy: $js.toString(() => {
-        // input 是 vod_play_url 中 $ 后半段, 即我们直接拼好的 m3u8 直链
+        // m3u8 直链直接播放, 其他用解析
         if (input && input.indexOf('.m3u8') > 0) {
             input = { parse: 0, url: input, header: rule.headers };
         } else {
@@ -47,57 +40,74 @@ var rule = {
         }
     }),
 
-    // 一级列表: 用 js 写法, 处理页码偏移 + 自定义解析
+    // === 首页推荐: 取最新电影列表 ===
+    推荐: $js.toString(() => {
+        let d = [];
+        let url = rule.host + '/movie/----newstime.html';
+        let html = request(url, { headers: rule.headers, timeout: rule.timeout });
+        let list = pdfa(html, '.lists-content ul li');
+        if (!list || list.length === 0) list = pdfa(html, 'ul li');
+        // 取前20个
+        let count = 0;
+        list.forEach(it => {
+            if (count >= 20) return;
+            let href = pdfh(it, 'h2 a && href') || '';
+            let name = (pdfh(it, 'h2 a && title') || pdfh(it, 'h2 a && Text') || '').trim();
+            let img = pdfh(it, 'a.thumbnail img && src') || pdfh(it, 'img && src') || '';
+            let remark = (pdfh(it, '.countrie span && Text') || pdfh(it, '.rate && Text') || '').trim();
+            if (!href || !name) return;
+            if (href.startsWith('//')) href = 'https:' + href;
+            else if (href.startsWith('/')) href = rule.host + href;
+            if (img && img.startsWith('//')) img = 'https:' + img;
+            else if (img && img.startsWith('/')) img = rule.host + img;
+            d.push({
+                vod_id: href,
+                vod_name: name,
+                vod_pic: img,
+                vod_remarks: remark
+            });
+            count++;
+        });
+        VODS = d;
+    }),
+
+    // === 一级分类列表 ===
     一级: $js.toString(() => {
         let d = [];
         let page = MY_PAGE || 1;
-        
-        // 把 filter_def 里的页偏移字段设为 (页码 - 1), 第 1 页就是空字符串
+
+        // 设置页偏移: offset = page - 1
         if (rule.filter_def) {
             Object.keys(rule.filter_def).forEach(cate => {
                 rule.filter_def[cate].页偏移 = page > 1 ? String(page - 1) : '';
             });
         }
-        
-        // input 由 drpy2 用 filter_url + filter_def 替换占位后生成的完整 path
-        // 我们需要把 host 也拼上
+
         let url = input;
         if (url.startsWith('/')) url = rule.host + url;
-        
-        // 移除可能的 ?page=fypage (备用)
-        if (url.indexOf('?page=') >= 0 || url.indexOf('&page=') >= 0) {
-            url = url.replace(/([?&])page=fypage/g, '$1page=' + page);
-        }
-        
+
         let html = request(url, { headers: rule.headers, timeout: rule.timeout });
-        
-        // 新的列表选择器 (适应网站结构变化)
-        let list = pdfa(html, '.lists-content > ul > li');
+
+        // 列表选择器: .lists-content ul li (实际页面无class, 但此选择器能匹配)
+        let list = pdfa(html, '.lists-content ul li');
         if (!list || list.length === 0) {
-            list = pdfa(html, '.lists-content ul li');
+            list = pdfa(html, 'ul li');
         }
-        if (!list || list.length === 0) {
-            list = pdfa(html, '.movie-grid > .movie-item');
-        }
-        if (!list || list.length === 0) {
-            list = pdfa(html, '.movie-list > .movie-item');
-        }
-        
+
         list.forEach(it => {
-            let href = pdfh(it, 'a && href') || '';
-            let name = (pdfh(it, 'h2 && Text') || pdfh(it, 'h3 && Text') || pdfh(it, '.title && Text') || pdfh(it, 'a && Text') || '').trim();
-            let img = pdfh(it, 'img && src') || pdfh(it, '.thumb && src') || pdfh(it, '.poster && src') || '';
-            let remark = (pdfh(it, '.rate && Text') || pdfh(it, '.rating && Text') || pdfh(it, '.info && Text') || '').trim();
-            
+            let href = pdfh(it, 'h2 a && href') || '';
+            let name = (pdfh(it, 'h2 a && title') || pdfh(it, 'h2 a && Text') || '').trim();
+            let img = pdfh(it, 'a.thumbnail img && src') || pdfh(it, 'img && src') || '';
+            let remark = (pdfh(it, '.countrie span && Text') || pdfh(it, '.rate && Text') || '').trim();
+
             if (!href || !name) return;
-            
-            // 补全 URL
+
             if (href.startsWith('//')) href = 'https:' + href;
             else if (href.startsWith('/')) href = rule.host + href;
-            
+
             if (img && img.startsWith('//')) img = 'https:' + img;
             else if (img && img.startsWith('/')) img = rule.host + img;
-            
+
             d.push({
                 vod_id: href,
                 vod_name: name,
@@ -105,70 +115,62 @@ var rule = {
                 vod_remarks: remark
             });
         });
-        
-        // 解析分页 (新的分页结构)
-        let pageHtml = pdfh(html, '.pagination && Html') || pdfh(html, '.pages && Html') || '';
+
+        // 分页解析: .pagination ul li a
+        // 实际URL: /movie/---1-newstime.html  (offset=1 表示第2页)
+        // offset 从0开始, 所以第 n 页的 offset = n-1
+        let pageHtml = pdfh(html, '.pagination && Html') || '';
         let pageCount = page;
-        let pageMatches = [...pageHtml.matchAll(/page=(\d+)/g)];
-        if (pageMatches.length > 0) {
-            pageCount = Math.max(page, ...pageMatches.map(m => Number(m[1])));
-        } else if (d.length >= 24) {
+        if (pageHtml) {
+            // 匹配 href="/movie/---N-newstime.html" 中的 N
+            let pageMatches = [...pageHtml.matchAll(/href="[^"]*?-(\d+)-[^"]*\.html/g)];
+            if (pageMatches.length > 0) {
+                let maxOffset = Math.max(...pageMatches.map(m => Number(m[1])));
+                pageCount = maxOffset + 1; // offset 转页码
+            }
+        }
+        if (pageCount === page && d.length >= 24) {
             pageCount = page + 1;
         }
-        
+
         VODS = d;
         setPage(page, pageCount);
     }),
 
-    // 二级详情: 核心是从 HTML 里提 infoid 和 m3u8 数组
+    // === 二级详情页 ===
     二级: $js.toString(() => {
-        // input = vod_id (完整详情页 URL)
         let url = input;
         let html = request(url, { headers: rule.headers, timeout: rule.timeout });
-        
-        // 标题
-        let title = (pdfh(html, 'h1 && Text') || pdfh(html, 'h2 && Text') || pdfh(html, '.title && Text') || '').trim();
-        let nameNoYear = title.replace(/\s*\([^)]*\)\s*$/, '').trim() || title.replace(/\s*\([^)]*\).*/, '').trim();
+
+        // 标题: h1.product-title
+        let title = (pdfh(html, 'h1.product-title && Text') || pdfh(html, 'h1 && Text') || '').trim();
+        let nameNoYear = title.replace(/\s*\([^)]*\)\s*$/, '').trim() || title;
         let yearMatch = title.match(/\((\d{4})\)/);
         let year = yearMatch ? yearMatch[1] : '';
-        
-        // 封面
-        let cover = pdfh(html, 'img && src') || pdfh(html, '.thumb && src') || pdfh(html, '.poster && src') || '';
+
+        // 封面: img.thumb
+        let cover = pdfh(html, 'img.thumb && src') || '';
         if (cover && cover.startsWith('//')) cover = 'https:' + cover;
         else if (cover && cover.startsWith('/')) cover = rule.host + cover;
-        
-        // 类型
+
+        // 类型判断
         let type = '';
         if (url.indexOf('/movie/') >= 0) type = '电影';
         else if (url.indexOf('/tv/') >= 0) type = '电视剧';
-        
-        // 详情字段 (新的选择器)
-        let content = '', director = '', actor = '';
-        let infoElements = pdfa(html, '.info-section');
-        if (!infoElements || infoElements.length === 0) {
-            infoElements = pdfa(html, '.movie-details');
-        }
-        
-        infoElements.forEach(el => {
-            let txt = pdfh(el, 'body && Text') || '';
-            if (txt.indexOf('简介') >= 0 || txt.indexOf('剧情') >= 0) {
-                content = txt.replace(/^.*?[简介剧情：:：]/, '').trim();
-            } else if (txt.indexOf('导演') >= 0 || txt.indexOf('导演') >= 0) {
-                director = (pdfh(el, 'span && Text') || '').trim();
-            } else if (txt.indexOf('主演') >= 0 || txt.indexOf('演员') >= 0) {
-                actor = (pdfh(el, 'span && Text') || '').replace(/\s*\/\s*/g, ',').trim();
-            }
-        });
-        
+
+        // 详情字段
+        let content = (pdfh(html, '.product-excerpt:contains(Summary) span && Text') || '').replace(/^Summary[：:]\s*/, '').trim();
+        let director = (pdfh(html, '.product-excerpt:contains(Directors) span && Text') || '').replace(/^Directors[：:]\s*/, '').trim();
+        let actor = (pdfh(html, '.product-excerpt:contains(Casts) span && Text') || '').replace(/^Casts[：:]\s*/, '').trim().replace(/\s*\/\s*/g, ',');
+
         // ===== 关键: 提取 infoid + m3u8 数组 =====
-        // 页面里有: <script>...infoid=8272;sub='...';m3u8=['1','2','3','4','5','6','7'];...</script>
+        // 页面源码: <script>classid=2;classurl='/tv/';infoid=8272;sub='...';m3u8=['1','2','3','4','5','6','7','8']</script>
         let infoId = (html.match(/infoid\s*=\s*(\d+)/) || [])[1] || '';
         if (!infoId) {
-            // fallback: 从 URL 提取数字
             let urlMatch = url.match(/\/(\d+)\.html/);
             if (urlMatch) infoId = urlMatch[1];
         }
-        
+
         let m3u8Items = [];
         let m3u8Match = html.match(/m3u8\s*=\s*\[(.*?)\]/);
         if (m3u8Match) {
@@ -184,30 +186,28 @@ var rule = {
                 }
             }
         }
-        
+
         // 构造播放列表
         let playFrom = [];
         let playUrl = [];
         if (m3u8Items.length > 0 && infoId) {
             playFrom.push('PPnix');
-            let urls = m3u8Items.map((ep, i) => {
-                let title = m3u8Items.length > 1 ? `第${i + 1}集` : (ep || '正片');
-                // 直接拼 m3u8 直链 (无需解析)
-                let streamUrl = `${rule.host}/info/m3u8/${infoId}/${encodeURIComponent(ep)}.m3u8`;
-                return title + '$' + streamUrl;
+            let urls = m3u8Items.map(function(ep, i) {
+                var epTitle = m3u8Items.length > 1 ? '第' + (i + 1) + '集' : (ep || '正片');
+                // 视频直链: /info/m3u8/{infoid}/{ep}.m3u8
+                var streamUrl = rule.host + '/info/m3u8/' + infoId + '/' + encodeURIComponent(ep) + '.m3u8';
+                return epTitle + '$' + streamUrl;
             });
             playUrl.push(urls.join('#'));
         } else {
-            // fallback: 没拿到 m3u8 数组, 只能跳原页
             playFrom.push('PPnix');
             playUrl.push('播放$' + url);
         }
-        
-        // 评分 (从 title 末尾提取)
-        let scoreMatch = title.match(/\s+(\d+(?:\.\d+)?)\s*$/);
-        let remark = scoreMatch ? '评分 ' + scoreMatch[1] : '';
-        
-        // 设置 VOD
+
+        // 评分
+        var score = (pdfh(html, '.rate && Text') || '').trim();
+        var remark = score ? '评分 ' + score : '';
+
         VOD = {
             vod_id: url,
             vod_name: nameNoYear || '未知',
@@ -223,30 +223,38 @@ var rule = {
         };
     }),
 
+    // === 搜索 ===
+    // 实际URL: /search/{keyword}-{offset}-.html (offset = 0,1,2...)
+    // drpy2 传入的 input = /search/{keyword}-{fypage}-.html (fypage 从1开始)
+    // 需要修正 offset = fypage - 1
     搜索: $js.toString(() => {
         let d = [];
-        let url = input;
+        let page = MY_PAGE || 1;
+        // 修正 offset: fypage 从1开始, 实际 offset = fypage - 1
+        let url = input.replace(/(\d+)(?=-\.html$)/, function(m) { return String(Number(m) - 1); });
         let html = request(url, { headers: rule.headers, timeout: rule.timeout });
-        
-        let list = pdfa(html, '.lists-content > ul > li');
-        if (!list || list.length === 0) list = pdfa(html, '.lists-content ul li');
-        
-        list.forEach(it => {
-            let href = pdfh(it, 'a && href') || '';
-            let name = (pdfh(it, 'h2 a && Text') || pdfh(it, 'a && Text') || '').trim();
-            let img = pdfh(it, 'img.thumb && src') || pdfh(it, 'img && src') || '';
-            let remark = (pdfh(it, 'footer .rate && Text') || pdfh(it, 'footer && Text') || '').trim();
-            
+
+        let list = pdfa(html, '.lists-content ul li');
+        if (!list || list.length === 0) {
+            list = pdfa(html, 'ul li');
+        }
+
+        list.forEach(function(it) {
+            var href = pdfh(it, 'h2 a && href') || '';
+            var name = (pdfh(it, 'h2 a && title') || pdfh(it, 'h2 a && Text') || '').trim();
+            var img = pdfh(it, 'a.thumbnail img && src') || pdfh(it, 'img && src') || '';
+            var remark = (pdfh(it, '.countrie span && Text') || pdfh(it, '.rate && Text') || '').trim();
+
             if (!href || !name) return;
             // 只保留影视详情页
             if (!/\/(movie|tv)\/\d+\.html/.test(href)) return;
-            
+
             if (href.startsWith('//')) href = 'https:' + href;
             else if (href.startsWith('/')) href = rule.host + href;
-            
+
             if (img && img.startsWith('//')) img = 'https:' + img;
             else if (img && img.startsWith('/')) img = rule.host + img;
-            
+
             d.push({
                 vod_id: href,
                 vod_name: name,
@@ -254,12 +262,13 @@ var rule = {
                 vod_remarks: remark
             });
         });
-        
+
         VODS = d;
         if (d.length >= 24) setPage(MY_PAGE, MY_PAGE + 1);
         else setPage(MY_PAGE, MY_PAGE);
     }),
 
+    // === 筛选选项 ===
     filter: {
         "movie": [
             { "key": "类型", "name": "类型", "value": [
@@ -306,7 +315,7 @@ var rule = {
                 { "n": "奇幻", "v": "Fantasy" }, { "n": "冒险", "v": "Adventure" },
                 { "n": "恐怖", "v": "Horror" }, { "n": "动画", "v": "Animation" },
                 { "n": "战争", "v": "War" }, { "n": "历史", "v": "History" },
-                { "n": "真人秀", "v": "Reality Show" }, { "n": "音乐", "v": "Music" }
+                { "n": "真人秀", "v": "Reality TV" }, { "n": "音乐", "v": "Music" }
             ]},
             { "key": "地区", "name": "地区", "value": [
                 { "n": "全部", "v": "" },
