@@ -15,8 +15,8 @@
   "key": "ppnix",
   "name": "「直」PPnix",
   "type": 3,
-  "api": "https://raw.githubusercontent.com/stevenrop/tvbox/refs/heads/main/ppnix.js",
-  "ext": "https://www.ppnix.com",
+  "api": "http://rihou.cc:88/js/drpy2.min.js",
+  "ext": "https://raw.githubusercontent.com/stevenrop/tvbox/refs/heads/main/ppnix.js",
   "searchable": 1,
   "quickSearch": 1,
   "filterable": 1
