@@ -20,7 +20,7 @@
   "searchable": 1,
   "quickSearch": 1,
   "filterable": 1,
-  "playerType": 1,
+  
 },
     {
       "key": "Duboku",
@@ -29,7 +29,7 @@
       "api": "csp_Duboku",
       "searchable": 1,
       "filterable": 1,
-      "changeable": 1,
+      "changeable": 1
     },
     {
       "key": "Netflix",
