@@ -227,7 +227,7 @@
       "key": "YouTube2",
       "name": "👖裤佬丨YouTube丨翻墙",
       "type": 3,
-      "api": "https://dogpan.com/f/ElGGFp/YouTube.py",
+      "api": "https://dogpan.com/f/48VOHl/YouTube.py",
       "searchable": 1,
       "quickSearch": 1,
       "filterable": 1,
@@ -236,7 +236,7 @@
         "ratio": 1.33
       },
       "ext": {
-        "youtube_txt": "https://dogpan.com/f/GZgziA/youtube.json"
+        "youtube_txt": "https://dogpan.com/f/3lE8s2/youtube.json"
       }
     },
     {
