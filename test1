@@ -224,22 +224,7 @@
   "ext": "{\"hls_proxy\":true,\"json\":\"https://jk.catvod.site/jk/t4/youtube_home.json\"}"
 },
 
-    {
-      "key": "YouTube2",
-      "name": "👖裤佬丨YouTube丨翻墙",
-      "type": 3,
-      "api": "https://dogpan.com/f/58VDI6/YouTube.py",
-      "searchable": 1,
-      "quickSearch": 1,
-      "filterable": 1,
-      "style": {
-        "type": "rect",
-        "ratio": 1.33
-      },
-      "ext": {
-        "youtube_txt": "https://dogpan.com/f/3lE8s2/youtube.json"
-      }
-    },
+    
 {
   "key": "py_4KAV",
   "name": "4KAV(T3)",
