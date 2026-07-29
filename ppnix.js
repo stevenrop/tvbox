@@ -1,6 +1,6 @@
-// PPnix v3 - 标准 drpy2 格式 (无自定义JS一级)
+// PPnix v3.1 - 标准 drpy2 格式 (修复字幕显示)
 // 网站: https://www.ppnix.com
-// 使用标准选择器格式，完全避免自定义JS函数的兼容问题
+// 修复: 在 lazy 中提取页面字幕(sub)信息，传递给播放器
 
 var rule = {
     title: 'PPnix',
@@ -30,7 +30,49 @@ var rule = {
     play_parse: true,
     lazy: $js.toString(() => {
         if (input && input.indexOf('.m3u8') > 0) {
-            input = { parse: 0, url: input, header: rule.headers };
+            var result = { parse: 0, url: input, header: rule.headers };
+
+            // 从 M3U8 URL 中提取 infoid 和 episode
+            // URL 格式: /info/m3u8/{infoid}/{episode}.m3u8
+            var match = input.match(/\/info\/m3u8\/(\d+)\/(.+)\.m3u8/);
+            if (match) {
+                var infoId = match[1];
+                var episode = match[2];
+
+                // 尝试获取详情页提取字幕语言列表
+                try {
+                    // 先尝试 movie 页面
+                    var pageUrl = rule.host + '/movie/' + infoId + '.html';
+                    var html = request(pageUrl, { headers: rule.headers, timeout: 5000 });
+                    var subMatch = html.match(/sub\s*=\s*'([^']+)'/);
+                    if (!subMatch) {
+                        // 再尝试 tv 页面
+                        pageUrl = rule.host + '/tv/' + infoId + '.html';
+                        html = request(pageUrl, { headers: rule.headers, timeout: 5000 });
+                        subMatch = html.match(/sub\s*=\s*'([^']+)'/);
+                    }
+
+                    if (subMatch && subMatch[1]) {
+                        var subs = subMatch[1].split('|').filter(function(s) { return s; });
+                        if (subs.length > 0) {
+                            var subUrls = [];
+                            var subNames = [];
+                            for (var i = 0; i < subs.length; i++) {
+                                var lang = subs[i];
+                                var name = lang === 'en' ? 'English' : (lang === 'cn' ? '中文(简体)' : '中文(繁體)');
+                                subUrls.push(rule.host + '/info/subtitle/' + infoId + '/' + episode + '/' + lang + '.srt');
+                                subNames.push(name);
+                            }
+                            result.sub_url = subUrls;
+                            result.sub_name = subNames;
+                        }
+                    }
+                } catch (e) {
+                    // 静默失败，字幕不可用也不影响播放
+                }
+            }
+
+            input = result;
         } else {
             input = { parse: 1, url: input, header: rule.headers };
         }
