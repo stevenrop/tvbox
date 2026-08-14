@@ -1,15 +1,15 @@
 # -*- coding: utf-8 -*-
 
-import html
-import mimetypes
+import sys
 import re
+import json
+import html
 from urllib.parse import quote, urljoin
 
 import requests
 import urllib3
-from pyquery import PyQuery as pq
+from lxml import etree
 
-import sys
 sys.path.append('..')
 from base.spider import Spider
 
@@ -37,7 +37,7 @@ class Spider(Spider):
         ('恐怖', 'Horror'),
         ('悬疑', 'Mystery'),
         ('奇幻', 'Fantasy'),
-        ('科幻', 'Sci Fi'),
+        ('科幻', 'Sci-Fi'),
         ('家庭', 'Family'),
         ('动画', 'Animation'),
         ('传记', 'Biography'),
@@ -60,7 +60,7 @@ class Spider(Spider):
         ('喜剧', 'Comedy'),
         ('爱情', 'Romance'),
         ('奇幻', 'Fantasy'),
-        ('科幻', 'Sci Fi'),
+        ('科幻', 'Sci-Fi'),
         ('冒险', 'Adventure'),
         ('恐怖', 'Horror'),
         ('动画', 'Animation'),
@@ -71,7 +71,7 @@ class Spider(Spider):
         ('西部', 'Western'),
         ('短片', 'Short'),
         ('运动', 'Sport'),
-        ('真人秀', 'Reality TV'),
+        ('真人秀', 'Reality-TV'),
         ('音乐', 'Music'),
         ('纪录', 'Documentary'),
     )
@@ -88,11 +88,7 @@ class Spider(Spider):
         self.ext = ''
         self.session = requests.Session()
         self.headers = {
-            'User-Agent': (
-                'Mozilla/5.0 (Windows NT 10.0; Win64; x64) '
-                'AppleWebKit/537.36 (KHTML, like Gecko) '
-                'Chrome/138.0.0.0 Safari/537.36'
-            ),
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36',
             'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8',
             'Accept-Language': 'en-US,en;q=0.9,zh-CN;q=0.8,zh;q=0.7',
             'Cache-Control': 'no-cache',
@@ -149,7 +145,7 @@ class Spider(Spider):
             response = self._request(self.host + '/')
             videos = self._parse_cards(response.text)
             return {'list': videos}
-        except Exception as e:
+        except Exception:
             return {'list': []}
 
     def categoryContent(self, tid, pg, filter, extend):
@@ -183,62 +179,32 @@ class Spider(Spider):
         try:
             detail_url = self._fix_url(raw_id)
             response = self._request(detail_url)
-            doc = self._doc(response.text)
+            tree = self._tree(response.text)
 
-            title = self._clean(
-                doc('h1.product-title').eq(0).text()
-                or doc('title').eq(0).text()
-            )
+            title = self._clean(self._xpath(tree, '//h1[contains(@class,"product-title")]/text()'))
             title = self._clean_title(title) or raw_id
 
             picture = ''
-            img = doc('.product-header img.thumb, article img.thumb').eq(0)
-            if len(img):
-                picture = self._picture(
-                    img.attr('src') or img.attr('data-original') or img.attr('data-src'),
-                    detail_url,
-                )
+            img_src = self._xpath(tree, '//div[contains(@class,"product-header")]//img[contains(@class,"thumb")]/@src')
+            if not img_src:
+                img_src = self._xpath(tree, '//article//img[contains(@class,"thumb")]/@src')
+            if img_src:
+                picture = self._picture(img_src, detail_url)
 
-            directors = []
-            for a in doc('.product-excerpt:contains("Directors") a').items():
-                name = self._clean(a.text())
-                if name:
-                    directors.append(name)
-
-            casts = []
-            for a in doc('.product-excerpt:contains("Casts") a').items():
-                name = self._clean(a.text())
-                if name:
-                    casts.append(name)
-
-            genres = []
-            for a in doc('.product-excerpt:contains("Genres") a').items():
-                name = self._clean(a.text())
-                if name:
-                    genres.append(name)
-
-            countries = []
-            for a in doc('.product-excerpt:contains("Countries") a').items():
-                name = self._clean(a.text())
-                if name:
-                    countries.append(name)
-
-            summary = ''
-            summary_div = doc('.product-excerpt:contains("Summary") span').eq(0)
-            if len(summary_div):
-                summary = self._clean(summary_div.text())
+            directors = self._xpath_all(tree, '//span[contains(text(),"Directors")]/following-sibling::span//a/text()')
+            casts = self._xpath_all(tree, '//span[contains(text(),"Casts")]/following-sibling::span//a/text()')
+            genres = self._xpath_all(tree, '//span[contains(text(),"Genres")]/following-sibling::span//a/text()')
+            countries = self._xpath_all(tree, '//span[contains(text(),"Countries")]/following-sibling::span//a/text()')
+            summary = self._clean(self._xpath(tree, '//span[contains(text(),"Summary")]/following-sibling::span/text()'))
 
             year_match = re.search(r'\((\d{4})\)', title)
             year = year_match.group(1) if year_match else ''
+            rate_text = self._clean(self._xpath(tree, '//h1[contains(@class,"product-title")]//span[contains(@class,"rate")]/text()'))
 
-            rate_text = self._clean(doc('h1.product-title .rate').eq(0).text())
-
-            match = re.search(r'classurl\s*=\s*["\']([^"\']+)["\']', response.text)
-            classurl = match.group(1) if match else ''
-            match2 = re.search(r'infoid\s*=\s*(\d+)', response.text)
-            infoid = match2.group(1) if match2 else ''
-            match3 = re.search(r"m3u8\s*=\s*\[([^\]]*)\]", response.text)
-            episodes_raw = match3.group(1) if match3 else ''
+            match_infoid = re.search(r'infoid\s*=\s*(\d+)', response.text)
+            infoid = match_infoid.group(1) if match_infoid else ''
+            match_m3u8 = re.search(r"m3u8\s*=\s*\[([^\]]*)\]", response.text)
+            episodes_raw = match_m3u8.group(1) if match_m3u8 else ''
             episode_list = re.findall(r"['\"]([^'\"]+)['\"]", episodes_raw)
 
             from_list = []
@@ -310,9 +276,6 @@ class Spider(Spider):
         except Exception:
             return {'list': [], 'page': page, 'pagecount': page, 'limit': self.PAGE_SIZE, 'total': 0}
 
-    def searchContentDetail(self, key, quick, pg='1'):
-        return None
-
     def playerContent(self, flag, id, vipFlags):
         value = str(id or '').strip()
         if not value:
@@ -380,24 +343,19 @@ class Spider(Spider):
                 verify=False,
             )
             response.raise_for_status()
-            return [200, self._mime(response.content, response.headers.get('Content-Type')), response.content]
+            return [200, 'image/jpeg', response.content]
         except Exception:
             return [500, 'text/plain; charset=utf-8', b'image proxy failed']
 
     def _build_filter(self, tid):
         filters = []
-
         genre_list = self.GENRES_MOVIE if tid == 'movie' else self.GENRES_TV
-        genre_values = [
-            {'n': name, 'v': val}
-            for name, val in genre_list
-        ]
+        genre_values = [{'n': name, 'v': val} for name, val in genre_list]
         filters.append({
             'key': 'genre',
             'name': '类型',
             'value': [{'n': '全部', 'v': ''}] + genre_values,
         })
-
         sort_values = [
             {'n': '默认', 'v': ''},
             {'n': '时间', 'v': 'newstime'},
@@ -409,96 +367,68 @@ class Spider(Spider):
             'name': '排序',
             'value': sort_values,
         })
-
         return filters
 
     def _category_url(self, tid, page, extend):
         slug = str(tid or '').strip()
         if slug not in ('movie', 'tv'):
             slug = 'movie'
-
         genre = ''
         country = ''
         year = ''
         sort = ''
-
         if isinstance(extend, dict):
             genre = str(extend.get('genre') or '').strip()
             country = str(extend.get('country') or '').strip()
             year = str(extend.get('year') or '').strip()
             sort_raw = str(extend.get('sort') or '').strip()
             sort = self.SORT_MAP.get(sort_raw, sort_raw)
-
         if genre and ' ' in genre and '%20' not in genre:
             genre = genre.replace(' ', '%20')
         if country and ' ' in country and '%20' not in country:
             country = country.replace(' ', '%20')
-
-        path = '/%s/%s-%s-%s--%s.html' % (slug, genre, country, year, sort)
-
         if page > 1:
-            parts = path.rsplit('.html', 1)
-            base = parts[0] if parts else path.rstrip('.html')
-            if base.endswith('.html'):
-                base = base[:-5]
-            path = '%s---%d-.html' % (base, page - 1) if not genre and not country and not year and not sort else '%s-%d.html' % (base, page - 1)
-
-            base_no_page = '/%s/' % slug
             if genre or country or year or sort:
                 path = '/%s/%s-%s-%s--%s---%d-.html' % (slug, genre, country, year, sort, page - 1)
             else:
                 path = '/%s/---%d-.html' % (slug, page - 1)
-
+        else:
+            path = '/%s/%s-%s-%s--%s.html' % (slug, genre, country, year, sort)
         return self.host + path
 
     def _parse_cards(self, html_text):
-        doc = self._doc(html_text)
-        items = doc('.lists-content ul li, .lists-content > ul > li').items()
+        tree = self._tree(html_text)
+        items = tree.xpath('//div[contains(@class,"lists-content")]//ul//li')
         if not items:
-            items = doc('li').filter(lambda i, this: pq(this)('a.thumbnail').length > 0).items()
-
+            items = tree.xpath('//li[.//a[contains(@class,"thumbnail")]]')
         videos = []
         seen = set()
-
         for li in items:
             try:
-                a_thumb = li('a.thumbnail').eq(0)
-                if not len(a_thumb):
+                a_thumb = li.xpath('.//a[contains(@class,"thumbnail")]')
+                if not a_thumb:
                     continue
-                href = str(a_thumb.attr('href') or '').strip()
+                href = str(a_thumb[0].get('href') or '').strip()
                 if not href or not re.search(r'/(movie|tv)/\d+\.html', href):
                     continue
-
                 absolute = urljoin(self.host + '/', href)
                 if absolute in seen:
                     continue
                 seen.add(absolute)
-
-                a_title = li('h2 a').eq(0)
-                title = self._clean(
-                    a_title.attr('title')
-                    or a_title.text()
-                    or a_thumb.attr('alt')
-                )
+                a_title = li.xpath('.//h2//a')
+                title = ''
+                if a_title:
+                    title = self._clean(a_title[0].get('title') or a_title[0].text or a_thumb[0].get('alt') or '')
                 if not title:
                     continue
-
-                img = li('img.thumb').eq(0)
-                raw_pic = img.attr('src') or img.attr('data-original') or img.attr('data-src') or ''
+                img = li.xpath('.//img[contains(@class,"thumb")]')
+                raw_pic = ''
+                if img:
+                    raw_pic = img[0].get('src') or img[0].get('data-original') or img[0].get('data-src') or ''
                 picture = self._picture(raw_pic, absolute)
-
-                year_text = ''
-                year_span = li('.countrie span').eq(0)
-                if len(year_span):
-                    year_text = self._clean(year_span.text())
-
-                note_text = ''
-                note_span = li('.note span').eq(0)
-                if len(note_span):
-                    note_text = self._clean(note_span.text())
-
-                rate_text = self._clean(li('.rate').eq(0).text())
-
+                year_text = self._clean(self._xpath(li, './/span[contains(@class,"countrie")]//span/text()'))
+                note_text = self._clean(self._xpath(li, './/span[contains(@class,"note")]//span/text()'))
+                rate_text = self._clean(self._xpath(li, './/span[contains(@class,"rate")]/text()'))
                 remark_parts = []
                 if year_text:
                     remark_parts.append(year_text)
@@ -506,7 +436,6 @@ class Spider(Spider):
                     remark_parts.append(note_text)
                 if rate_text and rate_text != '0':
                     remark_parts.append(rate_text + '分')
-
                 videos.append({
                     'vod_id': absolute,
                     'vod_name': title,
@@ -517,7 +446,6 @@ class Spider(Spider):
                 })
             except Exception:
                 continue
-
         return videos
 
     def _build_m3u8_url(self, infoid, episode):
@@ -538,16 +466,10 @@ class Spider(Spider):
             return ep_str or '播放'
 
     def _page_count(self, html_text, current):
-        doc = self._doc(html_text)
+        tree = self._tree(html_text)
         values = [max(1, self._int(current, 1))]
-        for a in doc('.pagination a').items():
-            href = str(a.attr('href') or '')
-            match = re.search(r'---(\d+)-\.html', href)
-            if match:
-                values.append(self._int(match.group(1), 0) + 1)
-        last_link = doc('.pagination li:last-child a, .pagination a:contains("Last")')
-        if len(last_link):
-            href = str(last_link.attr('href') or '')
+        for a in tree.xpath('//div[contains(@class,"pagination")]//a'):
+            href = str(a.get('href') or '')
             match = re.search(r'---(\d+)-\.html', href)
             if match:
                 values.append(self._int(match.group(1), 0) + 1)
@@ -568,12 +490,28 @@ class Spider(Spider):
             response.encoding = 'utf-8'
         return response
 
-    def _doc(self, value):
+    def _tree(self, value):
         text = value.decode('utf-8', errors='ignore') if isinstance(value, bytes) else str(value or '')
         try:
-            return pq(text)
+            return etree.HTML(text)
         except Exception:
-            return pq('<html></html>')
+            return etree.HTML('<html></html>')
+
+    def _xpath(self, node, path):
+        try:
+            result = node.xpath(path)
+            if result:
+                return result[0] if isinstance(result, list) else result
+        except Exception:
+            pass
+        return ''
+
+    def _xpath_all(self, node, path):
+        try:
+            result = node.xpath(path)
+            return [self._clean(str(x)) for x in result if self._clean(str(x))]
+        except Exception:
+            return []
 
     def _picture(self, value, page_url):
         raw = html.unescape(str(value or '').strip()).strip('`"\' ')
@@ -589,8 +527,6 @@ class Spider(Spider):
             return value
         if value.startswith('/'):
             return urljoin(self.host + '/', value)
-        if re.search(r'/(movie|tv)/\d+\.html', value):
-            return urljoin(self.host + '/', '/' + value)
         return urljoin(self.host + '/', '/' + value)
 
     def _media_headers(self):
@@ -632,16 +568,3 @@ class Spider(Spider):
             return int(value)
         except Exception:
             return default
-
-    @staticmethod
-    def _mime(data, declared=''):
-        if data.startswith(b'\xff\xd8\xff'):
-            return 'image/jpeg'
-        if data.startswith(b'\x89PNG'):
-            return 'image/png'
-        if data.startswith(b'GIF8'):
-            return 'image/gif'
-        if len(data) > 11 and data[:4] == b'RIFF' and data[8:12] == b'WEBP':
-            return 'image/webp'
-        declared = str(declared or '').split(';', 1)[0].strip()
-        return declared if declared.startswith('image/') else (mimetypes.guess_type('cover.jpg')[0] or 'application/octet-stream')
