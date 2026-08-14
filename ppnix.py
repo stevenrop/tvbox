@@ -332,7 +332,7 @@ class Spider(Spider):
         if episode.endswith('.m3u8'):
             episode = episode[:-5]
 
-        m3u8_url = self.host + self.LANG + '/info/m3u8/%s/%s.m3u8' % (infoid, episode)
+        m3u8_url = self.host + '/info/m3u8/%s/%s.m3u8' % (infoid, episode)
         resp = self.session.get(
             m3u8_url,
             headers={
@@ -368,7 +368,7 @@ class Spider(Spider):
     def _serve_key(self, path):
         try:
             resp = self.session.get(
-                self.host + self.LANG + '/info/m3u8/key',
+                self.host + '/info/m3u8/key',
                 headers={
                     'User-Agent': self.headers['User-Agent'],
                     'Referer': self.host + self.LANG + '/',
