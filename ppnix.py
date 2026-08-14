@@ -2,7 +2,6 @@
 
 import sys
 import re
-import json
 import html
 from urllib.parse import quote, urljoin
 
@@ -19,6 +18,7 @@ urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 class Spider(Spider):
 
     HOST = 'https://www.ppnix.com'
+    LANG = '/cn'
     PAGE_SIZE = 36
 
     CLASSES = (
@@ -27,53 +27,53 @@ class Spider(Spider):
     )
 
     GENRES_MOVIE = (
-        ('动作', 'Action'),
-        ('喜剧', 'Comedy'),
-        ('剧情', 'Drama'),
-        ('惊悚', 'Thriller'),
-        ('爱情', 'Romance'),
-        ('犯罪', 'Crime'),
-        ('冒险', 'Adventure'),
-        ('恐怖', 'Horror'),
-        ('悬疑', 'Mystery'),
-        ('奇幻', 'Fantasy'),
-        ('科幻', 'Sci-Fi'),
-        ('家庭', 'Family'),
-        ('动画', 'Animation'),
-        ('传记', 'Biography'),
-        ('历史', 'History'),
-        ('战争', 'War'),
-        ('音乐', 'Music'),
-        ('运动', 'Sport'),
-        ('歌舞', 'Musical'),
-        ('纪录', 'Documentary'),
-        ('西部', 'Western'),
-        ('短片', 'Short'),
+        ('动作', '动作'),
+        ('喜剧', '喜剧'),
+        ('剧情', '剧情'),
+        ('惊悚', '惊悚'),
+        ('爱情', '爱情'),
+        ('犯罪', '犯罪'),
+        ('冒险', '冒险'),
+        ('恐怖', '恐怖'),
+        ('悬疑', '悬疑'),
+        ('奇幻', '奇幻'),
+        ('科幻', '科幻'),
+        ('家庭', '家庭'),
+        ('动画', '动画'),
+        ('传记', '传记'),
+        ('历史', '历史'),
+        ('战争', '战争'),
+        ('音乐', '音乐'),
+        ('运动', '运动'),
+        ('歌舞', '歌舞'),
+        ('纪录', '纪录'),
+        ('西部', '西部'),
+        ('短片', '短片'),
     )
 
     GENRES_TV = (
-        ('剧情', 'Drama'),
-        ('惊悚', 'Thriller'),
-        ('悬疑', 'Mystery'),
-        ('犯罪', 'Crime'),
-        ('动作', 'Action'),
-        ('喜剧', 'Comedy'),
-        ('爱情', 'Romance'),
-        ('奇幻', 'Fantasy'),
-        ('科幻', 'Sci-Fi'),
-        ('冒险', 'Adventure'),
-        ('恐怖', 'Horror'),
-        ('动画', 'Animation'),
-        ('历史', 'History'),
-        ('战争', 'War'),
-        ('家庭', 'Family'),
-        ('传记', 'Biography'),
-        ('西部', 'Western'),
-        ('短片', 'Short'),
-        ('运动', 'Sport'),
-        ('真人秀', 'Reality-TV'),
-        ('音乐', 'Music'),
-        ('纪录', 'Documentary'),
+        ('剧情', '剧情'),
+        ('惊悚', '惊悚'),
+        ('悬疑', '悬疑'),
+        ('犯罪', '犯罪'),
+        ('动作', '动作'),
+        ('喜剧', '喜剧'),
+        ('爱情', '爱情'),
+        ('奇幻', '奇幻'),
+        ('科幻', '科幻'),
+        ('冒险', '冒险'),
+        ('恐怖', '恐怖'),
+        ('动画', '动画'),
+        ('历史', '历史'),
+        ('战争', '战争'),
+        ('家庭', '家庭'),
+        ('传记', '传记'),
+        ('西部', '西部'),
+        ('短片', '短片'),
+        ('运动', '运动'),
+        ('真人秀', '真人秀'),
+        ('音乐', '音乐'),
+        ('纪录', '纪录'),
     )
 
     SORT_MAP = {
@@ -90,7 +90,7 @@ class Spider(Spider):
         self.headers = {
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36',
             'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8',
-            'Accept-Language': 'en-US,en;q=0.9,zh-CN;q=0.8,zh;q=0.7',
+            'Accept-Language': 'zh-CN,zh;q=0.9,en;q=0.8',
             'Cache-Control': 'no-cache',
         }
         self.classes = [
@@ -142,7 +142,7 @@ class Spider(Spider):
 
     def homeVideoContent(self):
         try:
-            response = self._request(self.host + '/')
+            response = self._request(self.host + self.LANG + '/')
             videos = self._parse_cards(response.text)
             return {'list': videos}
         except Exception:
@@ -191,11 +191,11 @@ class Spider(Spider):
             if img_src:
                 picture = self._picture(img_src, detail_url)
 
-            directors = self._xpath_all(tree, '//span[contains(text(),"Directors")]/following-sibling::span//a/text()')
-            casts = self._xpath_all(tree, '//span[contains(text(),"Casts")]/following-sibling::span//a/text()')
-            genres = self._xpath_all(tree, '//span[contains(text(),"Genres")]/following-sibling::span//a/text()')
-            countries = self._xpath_all(tree, '//span[contains(text(),"Countries")]/following-sibling::span//a/text()')
-            summary = self._clean(self._xpath(tree, '//span[contains(text(),"Summary")]/following-sibling::span/text()'))
+            directors = self._xpath_all(tree, '//div[contains(@class,"product-excerpt")][contains(.,"导演") or contains(.,"Directors")]//a/text()')
+            casts = self._xpath_all(tree, '//div[contains(@class,"product-excerpt")][contains(.,"主演") or contains(.,"Casts")]//a/text()')
+            genres = self._xpath_all(tree, '//div[contains(@class,"product-excerpt")][contains(.,"类型") or contains(.,"Genres")]//a/text()')
+            countries = self._xpath_all(tree, '//div[contains(@class,"product-excerpt")][contains(.,"国家") or contains(.,"Countries")]//a/text()')
+            summary = self._clean(self._xpath(tree, '//div[contains(@class,"product-excerpt")][contains(.,"简介") or contains(.,"Summary")]//span/text()'))
 
             year_match = re.search(r'\((\d{4})\)', title)
             year = year_match.group(1) if year_match else ''
@@ -210,16 +210,18 @@ class Spider(Spider):
             from_list = []
             url_list = []
 
+            proxy_base = self._proxy_base()
+
             if episode_list:
                 if len(episode_list) == 1:
                     play_name = episode_list[0]
-                    play_url = self._build_m3u8_url(infoid, play_name)
+                    play_url = self._proxy_m3u8_url(infoid, play_name, proxy_base)
                     from_list.append('PPnix')
                     url_list.append('%s$%s' % (self._safe_part(play_name, '播放'), play_url))
                 else:
                     eps = []
                     for ep in episode_list:
-                        play_url = self._build_m3u8_url(infoid, ep)
+                        play_url = self._proxy_m3u8_url(infoid, ep, proxy_base)
                         ep_name = self._episode_name(ep)
                         eps.append('%s$%s' % (ep_name, play_url))
                     if eps:
@@ -227,7 +229,7 @@ class Spider(Spider):
                         url_list.append('#'.join(eps))
             else:
                 if infoid:
-                    play_url = self._build_m3u8_url(infoid, '1080P')
+                    play_url = self._proxy_m3u8_url(infoid, '1080P', proxy_base)
                     from_list.append('PPnix')
                     url_list.append('1080P$%s' % play_url)
 
@@ -259,9 +261,10 @@ class Spider(Spider):
             return {'list': [], 'page': page, 'pagecount': page, 'limit': self.PAGE_SIZE, 'total': 0}
         try:
             encoded = quote(keyword.replace(' ', '-'), safe='')
-            url = self.host + '/search/%s-------------.html' % encoded
             if page > 1:
-                url = self.host + '/search/%s----------%d-.html' % (encoded, page)
+                url = self.host + self.LANG + '/search/%s---%d-.html' % (encoded, page)
+            else:
+                url = self.host + self.LANG + '/search/%s--.html' % encoded
             response = self._request(url)
             videos = self._parse_cards(response.text)
             pagecount = self._page_count(response.text, page)
@@ -279,73 +282,105 @@ class Spider(Spider):
     def playerContent(self, flag, id, vipFlags):
         value = str(id or '').strip()
         if not value:
-            return {'parse': 1, 'playUrl': '', 'url': self.host + '/', 'header': self._page_headers(self.host + '/')}
-
-        if self._is_http(value) and self.isVideoFormat(value):
+            return {'parse': 1, 'playUrl': '', 'url': self.host + '/', 'header': ''}
+        if self._is_http(value):
             result = {
                 'parse': 0,
                 'playUrl': '',
                 'url': value,
-                'header': self._media_headers(),
+                'header': '',
             }
             if '.m3u8' in value.lower():
                 result['type'] = 'm3u8'
             return result
-
-        m3u8_url = value
-        if not m3u8_url.startswith('/'):
-            m3u8_url = '/' + m3u8_url
-        full_url = self.host + m3u8_url
-
-        try:
-            check = self.session.get(
-                full_url,
-                headers=dict(self.headers, **{'Referer': self.host + '/'}),
-                timeout=(5, 10),
-                verify=False,
-                allow_redirects=True,
-            )
-            ct = check.headers.get('Content-Type', '')
-            if check.status_code == 200 and ('mpegurl' in ct.lower() or 'octet' in ct.lower() or check.text.strip().startswith('#EXT')):
-                return {
-                    'parse': 0,
-                    'playUrl': '',
-                    'url': full_url,
-                    'header': self._media_headers(),
-                    'type': 'm3u8',
-                }
-        except Exception:
-            pass
-
         return {
-            'parse': 1,
+            'parse': 0,
             'playUrl': '',
-            'url': full_url,
-            'header': self._page_headers(self.host + '/'),
+            'url': value,
+            'header': '',
+            'type': 'm3u8',
         }
 
     def localProxy(self, param):
         try:
-            param_type = param.get('type')
-            param_url = param.get('url')
+            path = param.get('path') or ''
+            if not path:
+                return [404, 'text/plain; charset=utf-8', b'not found']
+            if path.startswith('/m3u8/'):
+                return self._serve_m3u8(path)
+            if path.startswith('/key'):
+                return self._serve_key(path)
+            return [404, 'text/plain; charset=utf-8', b'unknown']
         except Exception:
-            param_type = param_url = None
-        if param_type != 'img' or not param_url:
-            return [404, 'text/plain; charset=utf-8', b'not found']
+            return [500, 'text/plain; charset=utf-8', b'proxy error']
+
+    def _serve_m3u8(self, path):
+        parts = path.strip('/').split('/')
+        if len(parts) < 3:
+            return [404, 'text/plain', b'bad path']
+        infoid = parts[1]
+        episode = parts[2]
+        if episode.endswith('.m3u8'):
+            episode = episode[:-5]
+
+        m3u8_url = self.host + '/info/m3u8/%s/%s.m3u8' % (infoid, episode)
+        resp = self.session.get(
+            m3u8_url,
+            headers={
+                'User-Agent': self.headers['User-Agent'],
+                'Referer': self.host + '/',
+                'Accept': '*/*',
+            },
+            timeout=15,
+            verify=False,
+        )
+        if resp.status_code != 200:
+            return [resp.status_code, 'text/plain', b'upstream error']
+
+        proxy_base = self._proxy_base().rstrip('/')
+        content = resp.text
+        content = re.sub(
+            r'URI="[^"]*"',
+            'URI="%s/key"' % proxy_base,
+            content,
+        )
+        return [200, 'application/vnd.apple.mpegurl', content.encode('utf-8')]
+
+    def _serve_key(self, path):
         try:
-            response = self.session.get(
-                str(param_url),
+            resp = self.session.get(
+                self.host + '/info/m3u8/key',
                 headers={
                     'User-Agent': self.headers['User-Agent'],
-                    'Accept': 'image/avif,image/webp,image/apng,image/*,*/*;q=0.8',
+                    'Referer': self.host + '/',
+                    'Accept': '*/*',
                 },
-                timeout=(8, 20),
+                timeout=10,
                 verify=False,
             )
-            response.raise_for_status()
-            return [200, 'image/jpeg', response.content]
+            if resp.status_code == 200 and resp.content:
+                key_hex = resp.text.strip()
+                if len(key_hex) == 32:
+                    try:
+                        key_bytes = bytes.fromhex(key_hex)
+                        return [200, 'application/octet-stream', key_bytes]
+                    except Exception:
+                        pass
+                if len(resp.content) == 16:
+                    return [200, 'application/octet-stream', resp.content]
+                return [200, 'application/octet-stream', resp.content]
         except Exception:
-            return [500, 'text/plain; charset=utf-8', b'image proxy failed']
+            pass
+        return [500, 'text/plain', b'key error']
+
+    def _proxy_base(self):
+        try:
+            return self.clients.getLocalProxyUrl()
+        except Exception:
+            return 'http://127.0.0.1:0/proxy'
+
+    def _proxy_m3u8_url(self, infoid, episode, proxy_base):
+        return '%s/m3u8/%s/%s.m3u8' % (proxy_base.rstrip('/'), infoid, episode)
 
     def _build_filter(self, tid):
         filters = []
@@ -389,11 +424,11 @@ class Spider(Spider):
             country = country.replace(' ', '%20')
         if page > 1:
             if genre or country or year or sort:
-                path = '/%s/%s-%s-%s--%s---%d-.html' % (slug, genre, country, year, sort, page - 1)
+                path = '/%s/%s/%s-%s-%s--%s---%d-.html' % (self.LANG, slug, genre, country, year, sort, page - 1)
             else:
-                path = '/%s/---%d-.html' % (slug, page - 1)
+                path = '/%s/%s/---%d-.html' % (self.LANG, slug, page - 1)
         else:
-            path = '/%s/%s-%s-%s--%s.html' % (slug, genre, country, year, sort)
+            path = '/%s/%s/%s-%s-%s--%s.html' % (self.LANG, slug, genre, country, year, sort)
         return self.host + path
 
     def _parse_cards(self, html_text):
@@ -412,6 +447,8 @@ class Spider(Spider):
                 if not href or not re.search(r'/(movie|tv)/\d+\.html', href):
                     continue
                 absolute = urljoin(self.host + '/', href)
+                if '/cn/' not in absolute and '/tw/' not in absolute:
+                    absolute = absolute.replace(self.host + '/', self.host + self.LANG + '/')
                 if absolute in seen:
                     continue
                 seen.add(absolute)
@@ -448,13 +485,6 @@ class Spider(Spider):
                 continue
         return videos
 
-    def _build_m3u8_url(self, infoid, episode):
-        infoid = str(infoid or '').strip()
-        episode = str(episode or '').strip()
-        if not infoid:
-            return ''
-        return self.host + '/info/m3u8/%s/%s.m3u8' % (infoid, episode)
-
     def _episode_name(self, ep):
         ep_str = str(ep or '').strip()
         if ep_str == '1080P':
@@ -477,7 +507,7 @@ class Spider(Spider):
 
     def _request(self, url, timeout=22):
         headers = dict(self.headers)
-        headers['Referer'] = self.host + '/'
+        headers['Referer'] = self.host + self.LANG + '/'
         response = self.session.get(
             url,
             headers=headers,
@@ -501,7 +531,10 @@ class Spider(Spider):
         try:
             result = node.xpath(path)
             if result:
-                return result[0] if isinstance(result, list) else result
+                val = result[0] if isinstance(result, list) else result
+                if isinstance(val, bytes):
+                    return val.decode('utf-8', errors='ignore')
+                return str(val)
         except Exception:
             pass
         return ''
@@ -509,7 +542,14 @@ class Spider(Spider):
     def _xpath_all(self, node, path):
         try:
             result = node.xpath(path)
-            return [self._clean(str(x)) for x in result if self._clean(str(x))]
+            vals = []
+            for x in result:
+                if isinstance(x, bytes):
+                    x = x.decode('utf-8', errors='ignore')
+                s = self._clean(str(x))
+                if s:
+                    vals.append(s)
+            return vals
         except Exception:
             return []
 
@@ -524,23 +564,14 @@ class Spider(Spider):
     def _fix_url(self, value):
         value = html.unescape(str(value or '').strip())
         if value.startswith(('http://', 'https://')):
+            if '/cn/' not in value and '/tw/' not in value and re.search(r'/(movie|tv)/\d+\.html', value):
+                value = value.replace(self.host + '/', self.host + self.LANG + '/')
             return value
-        if value.startswith('/'):
+        if value.startswith('/cn/') or value.startswith('/tw/'):
             return urljoin(self.host + '/', value)
-        return urljoin(self.host + '/', '/' + value)
-
-    def _media_headers(self):
-        return {
-            'User-Agent': self.headers['User-Agent'],
-            'Accept': '*/*',
-        }
-
-    def _page_headers(self, referer=''):
-        return {
-            'User-Agent': self.headers['User-Agent'],
-            'Accept': self.headers.get('Accept', '*/*'),
-            'Referer': referer or self.host + '/',
-        }
+        if value.startswith('/'):
+            return urljoin(self.host + '/', self.LANG + value)
+        return urljoin(self.host + '/', self.LANG + '/' + value)
 
     @staticmethod
     def _is_http(value):
