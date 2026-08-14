@@ -319,6 +319,8 @@ class Spider(Spider):
                 return self._serve_m3u8(path)
             if path.startswith('/key'):
                 return self._serve_key(path)
+            if path.startswith('/seg/'):
+                return self._serve_segment(path)
             return [404, 'text/plain; charset=utf-8', b'unknown']
         except Exception:
             return [500, 'text/plain; charset=utf-8', b'proxy error']
@@ -354,16 +356,49 @@ class Spider(Spider):
             'URI="%s"' % key_url,
             content,
         )
-        # 将相对分段 URL 解析为绝对 URL，确保 TVBox 能正确加载
-        base_url = m3u8_url.rsplit('/', 1)[0] + '/'
+        # 将分段 URL 替换为本地代理路径，避免播放器直接访问 IPFS 网关导致超时
         lines = []
         for line in content.split('\n'):
             line = line.strip()
-            if line and not line.startswith('#') and not self._is_http(line):
-                line = urljoin(base_url, line)
+            if line and not line.startswith('#') and self._is_http(line):
+                line = self._seg_proxy_url(line, proxy_base)
             lines.append(line)
         content = '\n'.join(lines)
         return [200, 'application/vnd.apple.mpegurl', content.encode('utf-8')]
+
+    def _serve_segment(self, path):
+        import base64
+        encoded = path.strip('/').split('/')[-1]
+        padding = '=' * (-len(encoded) % 4)
+        try:
+            seg_url = base64.urlsafe_b64decode(encoded + padding).decode('utf-8')
+        except Exception:
+            return [400, 'text/plain', b'bad segment']
+        try:
+            resp = self.session.get(
+                seg_url,
+                headers={
+                    'User-Agent': self.headers['User-Agent'],
+                    'Referer': self.host + self.LANG + '/',
+                    'Accept': '*/*',
+                },
+                timeout=20,
+                verify=False,
+                stream=True,
+            )
+            if resp.status_code != 200:
+                return [resp.status_code, 'application/octet-stream', b'segment error']
+            return [200, 'application/octet-stream', resp.content]
+        except Exception:
+            return [500, 'application/octet-stream', b'segment error']
+
+    def _seg_proxy_url(self, seg_url, proxy_base):
+        import base64
+        encoded = base64.urlsafe_b64encode(seg_url.encode('utf-8')).decode('utf-8').rstrip('=')
+        base = proxy_base.rstrip('/')
+        if '?' in base:
+            return '%s&path=/seg/%s' % (base, encoded)
+        return '%s/seg/%s' % (base, encoded)
 
     def _serve_key(self, path):
         try:
