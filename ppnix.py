@@ -1,15 +1,13 @@
 # -*- coding: utf-8 -*-
-
-import sys
 import re
 import html
+import base64
 from urllib.parse import quote, urljoin
 
 import requests
 import urllib3
 from lxml import etree
 
-sys.path.append('..')
 from base.spider import Spider
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
@@ -27,53 +25,21 @@ class Spider(Spider):
     )
 
     GENRES_MOVIE = (
-        ('动作', '动作'),
-        ('喜剧', '喜剧'),
-        ('剧情', '剧情'),
-        ('惊悚', '惊悚'),
-        ('爱情', '爱情'),
-        ('犯罪', '犯罪'),
-        ('冒险', '冒险'),
-        ('恐怖', '恐怖'),
-        ('悬疑', '悬疑'),
-        ('奇幻', '奇幻'),
-        ('科幻', '科幻'),
-        ('家庭', '家庭'),
-        ('动画', '动画'),
-        ('传记', '传记'),
-        ('历史', '历史'),
-        ('战争', '战争'),
-        ('音乐', '音乐'),
-        ('运动', '运动'),
-        ('歌舞', '歌舞'),
-        ('纪录', '纪录'),
-        ('西部', '西部'),
-        ('短片', '短片'),
+        ('动作', '动作'), ('喜剧', '喜剧'), ('剧情', '剧情'), ('惊悚', '惊悚'),
+        ('爱情', '爱情'), ('犯罪', '犯罪'), ('冒险', '冒险'), ('恐怖', '恐怖'),
+        ('悬疑', '悬疑'), ('奇幻', '奇幻'), ('科幻', '科幻'), ('家庭', '家庭'),
+        ('动画', '动画'), ('传记', '传记'), ('历史', '历史'), ('战争', '战争'),
+        ('音乐', '音乐'), ('运动', '运动'), ('歌舞', '歌舞'), ('纪录', '纪录'),
+        ('西部', '西部'), ('短片', '短片'),
     )
 
     GENRES_TV = (
-        ('剧情', '剧情'),
-        ('惊悚', '惊悚'),
-        ('悬疑', '悬疑'),
-        ('犯罪', '犯罪'),
-        ('动作', '动作'),
-        ('喜剧', '喜剧'),
-        ('爱情', '爱情'),
-        ('奇幻', '奇幻'),
-        ('科幻', '科幻'),
-        ('冒险', '冒险'),
-        ('恐怖', '恐怖'),
-        ('动画', '动画'),
-        ('历史', '历史'),
-        ('战争', '战争'),
-        ('家庭', '家庭'),
-        ('传记', '传记'),
-        ('西部', '西部'),
-        ('短片', '短片'),
-        ('运动', '运动'),
-        ('真人秀', '真人秀'),
-        ('音乐', '音乐'),
-        ('纪录', '纪录'),
+        ('剧情', '剧情'), ('惊悚', '惊悚'), ('悬疑', '悬疑'), ('犯罪', '犯罪'),
+        ('动作', '动作'), ('喜剧', '喜剧'), ('爱情', '爱情'), ('奇幻', '奇幻'),
+        ('科幻', '科幻'), ('冒险', '冒险'), ('恐怖', '恐怖'), ('动画', '动画'),
+        ('历史', '历史'), ('战争', '战争'), ('家庭', '家庭'), ('传记', '传记'),
+        ('西部', '西部'), ('短片', '短片'), ('运动', '运动'), ('真人秀', '真人秀'),
+        ('音乐', '音乐'), ('纪录', '纪录'),
     )
 
     SORT_MAP = {
@@ -84,6 +50,7 @@ class Spider(Spider):
     }
 
     def __init__(self):
+        super().__init__()
         self.host = self.HOST
         self.ext = ''
         self.session = requests.Session()
@@ -293,7 +260,6 @@ class Spider(Spider):
             if '.m3u8' in value.lower():
                 result['type'] = 'm3u8'
             return result
-        # 本地代理 URL（如 /m3u8/xxx/xxx.m3u8）
         if value.startswith('/'):
             return {
                 'parse': 0,
@@ -356,7 +322,7 @@ class Spider(Spider):
             'URI="%s"' % key_url,
             content,
         )
-        # 将分段 URL 替换为本地代理路径，避免播放器直接访问 IPFS 网关导致超时
+        # 将分段 URL 替换为本地代理路径，避免播放器直接访问 IPFS 网关
         lines = []
         for line in content.split('\n'):
             line = line.strip()
@@ -367,7 +333,6 @@ class Spider(Spider):
         return [200, 'application/vnd.apple.mpegurl', content.encode('utf-8')]
 
     def _serve_segment(self, path):
-        import base64
         encoded = path.strip('/').split('/')[-1]
         padding = '=' * (-len(encoded) % 4)
         try:
@@ -375,11 +340,11 @@ class Spider(Spider):
         except Exception:
             return [400, 'text/plain', b'bad segment']
         try:
+            # 不带 Referer 请求 IPFS 网关，避免网关返回 500
             resp = self.session.get(
                 seg_url,
                 headers={
                     'User-Agent': self.headers['User-Agent'],
-                    'Referer': self.host + self.LANG + '/',
                     'Accept': '*/*',
                 },
                 timeout=20,
@@ -393,7 +358,6 @@ class Spider(Spider):
             return [500, 'application/octet-stream', b'segment error']
 
     def _seg_proxy_url(self, seg_url, proxy_base):
-        import base64
         encoded = base64.urlsafe_b64encode(seg_url.encode('utf-8')).decode('utf-8').rstrip('=')
         base = proxy_base.rstrip('/')
         if '?' in base:
