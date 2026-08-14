@@ -293,6 +293,15 @@ class Spider(Spider):
             if '.m3u8' in value.lower():
                 result['type'] = 'm3u8'
             return result
+        # 本地代理 URL（如 /m3u8/xxx/xxx.m3u8）
+        if value.startswith('/'):
+            return {
+                'parse': 0,
+                'playUrl': '',
+                'url': value,
+                'header': '',
+                'type': 'm3u8',
+            }
         return {
             'parse': 0,
             'playUrl': '',
@@ -323,12 +332,12 @@ class Spider(Spider):
         if episode.endswith('.m3u8'):
             episode = episode[:-5]
 
-        m3u8_url = self.host + '/info/m3u8/%s/%s.m3u8' % (infoid, episode)
+        m3u8_url = self.host + self.LANG + '/info/m3u8/%s/%s.m3u8' % (infoid, episode)
         resp = self.session.get(
             m3u8_url,
             headers={
                 'User-Agent': self.headers['User-Agent'],
-                'Referer': self.host + '/',
+                'Referer': self.host + self.LANG + '/',
                 'Accept': '*/*',
             },
             timeout=15,
@@ -338,21 +347,31 @@ class Spider(Spider):
             return [resp.status_code, 'text/plain', b'upstream error']
 
         proxy_base = self._proxy_base().rstrip('/')
+        key_url = '%s&path=/key' % proxy_base if '?' in proxy_base else '%s/key' % proxy_base
         content = resp.text
         content = re.sub(
-            r'URI="[^"]*"',
-            'URI="%s/key"' % proxy_base,
+            r'URI=["\']?[^"\'>]*["\']?',
+            'URI="%s"' % key_url,
             content,
         )
+        # 将相对分段 URL 解析为绝对 URL，确保 TVBox 能正确加载
+        base_url = m3u8_url.rsplit('/', 1)[0] + '/'
+        lines = []
+        for line in content.split('\n'):
+            line = line.strip()
+            if line and not line.startswith('#') and not self._is_http(line):
+                line = urljoin(base_url, line)
+            lines.append(line)
+        content = '\n'.join(lines)
         return [200, 'application/vnd.apple.mpegurl', content.encode('utf-8')]
 
     def _serve_key(self, path):
         try:
             resp = self.session.get(
-                self.host + '/info/m3u8/key',
+                self.host + self.LANG + '/info/m3u8/key',
                 headers={
                     'User-Agent': self.headers['User-Agent'],
-                    'Referer': self.host + '/',
+                    'Referer': self.host + self.LANG + '/',
                     'Accept': '*/*',
                 },
                 timeout=10,
@@ -380,7 +399,10 @@ class Spider(Spider):
             return 'http://127.0.0.1:0/proxy'
 
     def _proxy_m3u8_url(self, infoid, episode, proxy_base):
-        return '%s/m3u8/%s/%s.m3u8' % (proxy_base.rstrip('/'), infoid, episode)
+        base = proxy_base.rstrip('/')
+        if '?' in base:
+            return '%s&path=/m3u8/%s/%s.m3u8' % (base, infoid, episode)
+        return '%s/m3u8/%s/%s.m3u8' % (base, infoid, episode)
 
     def _build_filter(self, tid):
         filters = []
