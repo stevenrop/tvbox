@@ -6,7 +6,7 @@ top3.zgtv.online (追光影视) 爬虫
 - 详情: /voddetail/{id}.html
 - 播放: /vodplay/{id}-{sid}-{nid}.html -> player_aaaa JS变量
 - 搜索: /vodsearch/{keyword}-------------.html
-- 播放链接是视频站原始URL(芒果/爱奇艺等), 需要解析线路
+- 播放链接分两类: 直链(m3u8/mp4) 与 视频站原始URL(芒果/爱奇艺/腾讯/优酷/B站)
 """
 import sys
 import re
@@ -31,18 +31,21 @@ def _(x): return x
 HOST = "https://top3.zgtv.online"
 UA = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
 
-# 播放源 -> 解析接口映射 (from playerconfig.js) - 仅供参考, 当前不使用
+# 视频站源解析器(网站当前配套的官方解析接口)
+PARSE_HOST = "https://tv.time1080.xyz"
+
+# 播放源 -> 解析接口映射 (来自 playerconfig.js) - 仅供参考
 _PARSE_MAP = {
     "wsym3u8": "https://wsyzy.vip/m3u8/?url=",
     "bfzym3u8": "https://free.maccms.xyz/?url=",
     "360zy":   "https://free.maccms.xyz/?url=",
     "mtm3u8":  "https://free.maccms.xyz/?url=",
-    "qq":      "https://z01.zgtv.online/player/?url=",
-    "qiyi":    "https://z01.zgtv.online/player/?url=",
-    "youku":   "https://z01.zgtv.online/player/?url=",
-    "mgtv":    "https://z01.zgtv.online/player/?url=",
-    "bilibili": "https://z01.zgtv.online/player/?url=",
-    "mjzy":    "https://svip.qlplayer.cyou/?url=",
+    "qq":      "https://tv.time1080.xyz/player/?url=",
+    "qiyi":    "https://tv.time1080.xyz/player/?url=",
+    "youku":   "https://tv.time1080.xyz/player/?url=",
+    "mgtv":    "https://tv.time1080.xyz/player/?url=",
+    "bilibili": "https://tv.time1080.xyz/player/?url=",
+    "mjzy":    "https://mujizybf.com/m3u8/?url=",
 }
 
 # 备用解析接口 (仅保留供参考)
@@ -68,7 +71,7 @@ _BACKUP_PARSERS = [
 # from字段 -> 中文显示名
 FROM_NAMES = {
     "qq": "腾讯",
-    "qiyi": "奇艺",
+    "qiyi": "奇异",
     "youku": "优酷",
     "mgtv": "芒果",
     "bilibili": "B站",
@@ -81,7 +84,7 @@ FROM_NAMES = {
     "videojs": "VideoJS",
 }
 
-# 需要解析的from类型 (视频站链接, 需要通过第三方解析接口)
+# 需要解析的from类型 (视频站链接, 需要通过解析接口解析)
 NEED_PARSE_FROM = {"qq", "qiyi", "youku", "mgtv", "bilibili"}
 
 # 主分类
@@ -168,44 +171,41 @@ class Spider(Spider):
                     html
                 )
 
-            # 按sid分组 (同一播放源)
-            by_sid = defaultdict(list)
-            for match in all_links:
-                if len(match) == 5:
-                    href, v, sid, nid, name = match
-                    if v == vid:
-                        by_sid[sid].append((int(nid), name.strip(), href))
-
-            # 播放源标签
+            # 播放源标签(tab名, 按出现顺序)
             heading = re.search(
                 r'id="y-playList"[^>]*>([\s\S]*?)</div>\s*</div>\s*</div>', html
             )
             source_names = []
             if heading:
-                source_names = re.findall(r'data-dropdown-value="([^"]+)">\s*<span>([^<]+)</span>', heading.group(1))
+                source_names = re.findall(r'data-dropdown-value="([^"]+)"', heading.group(1))
+
+            # 按 HTML 出现顺序分组 (同一播放源)
+            ordered_sids = []
+            by_sid = defaultdict(list)
+            for match in all_links:
+                if len(match) == 5:
+                    href, v, sid, nid, name = match
+                    if v == vid:
+                        if sid not in by_sid:
+                            ordered_sids.append(sid)
+                        by_sid[sid].append((int(nid), name.strip(), href))
 
             pf_list = []
             pu_list = []
-            src_idx = 0
 
-            for sid in sorted(by_sid.keys()):
+            for idx, sid in enumerate(ordered_sids):
                 eps = sorted(by_sid[sid])
-                src_idx += 1
 
                 # 获取该源的from字段(只请求第一集)
                 sid_from = self._get_from_source(vid, sid)
 
-                # 跳过需要解析的视频站源 (qq/qiyi/youku/mgtv/bilibili)
-                if sid_from in NEED_PARSE_FROM:
-                    continue
-
-                # 直链源: 优先用网站的source_names, 否则用from映射名
-                if src_idx - 1 < len(source_names):
-                    friendly_name = source_names[src_idx - 1][1]
+                # 命名: 优先网站tab名(按顺序对应), 否则用from映射名
+                if idx < len(source_names):
+                    friendly_name = source_names[idx]
                 else:
-                    friendly_name = FROM_NAMES.get(sid_from, f"线路{src_idx}")
+                    friendly_name = FROM_NAMES.get(sid_from, f"线路{idx + 1}")
 
-                # 直链源
+                # 直链源与视频站源都保留, from通过|传给playerContent
                 ep_list = []
                 for nid, name, href in eps:
                     ep_list.append(f"{name}${href}|{sid_from}")
@@ -259,13 +259,21 @@ class Spider(Spider):
             play_data = self._extract_player_data(url)
             if play_data:
                 raw_url = play_data.get("url", "")
+                # from字段优先取player_aaaa里的值
+                pfrom = play_data.get("from", "") or from_src
 
                 # 如果已经是m3u8/mp4直链, 直接播放
                 if raw_url and (".m3u8" in raw_url or ".mp4" in raw_url):
                     return {"url": raw_url}
 
-                # 如果是视频站链接(qq/youku等), 返回原始URL让壳子解析
+                # 视频站链接(qq/youku等): 走网站官方解析器
                 if raw_url and raw_url.startswith("http"):
+                    if pfrom in NEED_PARSE_FROM:
+                        return {
+                            "url": f"{PARSE_HOST}/player/?url={quote(raw_url, safe='')}",
+                            "header": {"User-Agent": UA, "Referer": HOST},
+                        }
+                    # 其他http链接, 让壳子自行解析
                     return {"url": raw_url, "parse": 1, "header": {"User-Agent": UA}}
             return {"url": ""}
 
@@ -383,7 +391,7 @@ class Spider(Spider):
             url = f"{HOST}{path}"
             r = self._get(url, timeout=15000)
             html = r.text
-            m = re.search(r'player_aaaa\s*=\s*(\{[^}]+\})', html)
+            m = re.search(r'player_aaaa\s*=\s*(\{[^}]+})', html)
             if m:
                 data = json.loads(m.group(1))
                 return data.get("url", "")
@@ -397,7 +405,7 @@ class Spider(Spider):
             url = f"{HOST}{path}"
             r = self._get(url, timeout=15000)
             html = r.text
-            m = re.search(r'player_aaaa\s*=\s*(\{[^}]+\})', html)
+            m = re.search(r'player_aaaa\s*=\s*(\{[^}]+})', html)
             if m:
                 data = json.loads(m.group(1))
                 return data
@@ -411,7 +419,7 @@ class Spider(Spider):
             url = f"{HOST}/vodplay/{vid}-{sid}-1.html"
             r = self._get(url, timeout=10000)
             html = r.text
-            m = re.search(r'player_aaaa\s*=\s*(\{[^}]+\})', html)
+            m = re.search(r'player_aaaa\s*=\s*(\{[^}]+})', html)
             if m:
                 data = json.loads(m.group(1))
                 return data.get("from", "")
@@ -427,7 +435,7 @@ class Spider(Spider):
             html = r.text
 
             # 匹配 player_aaaa={"url":"..."}
-            m = re.search(r'player_aaaa\s*=\s*(\{[^}]+\})', html, re.DOTALL)
+            m = re.search(r'player_aaaa\s*=\s*(\{[^}]+})', html, re.DOTALL)
             if m:
                 data = json.loads(m.group(1))
                 play_url = data.get("url", "")
